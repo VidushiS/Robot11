@@ -4,11 +4,8 @@ package Team4450.Robot11;
 import Team4450.Lib.*;
 import Team4450.Robot11.Devices;
 <<<<<<< HEAD
-<<<<<<< HEAD
 import edu.wpi.first.wpilibj.Encoder;
 =======
-=======
->>>>>>> 83521c4f786ada06560a623ad5d954ab8cc70353
 //import edu.wpi.first.wpilibj.Encoder;
 >>>>>>> 6d4b408996896d590295e1eeb33b1971acba8c84
 import edu.wpi.first.wpilibj.Timer;
