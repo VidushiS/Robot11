@@ -3,14 +3,9 @@ package Team4450.Robot11;
 
 import Team4450.Lib.*;
 import Team4450.Robot11.Devices;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import edu.wpi.first.wpilibj.Encoder;
-=======
-=======
->>>>>>> 83521c4f786ada06560a623ad5d954ab8cc70353
-//import edu.wpi.first.wpilibj.Encoder;
->>>>>>> 6d4b408996896d590295e1eeb33b1971acba8c84
+import edu.wpi.first.wpilibj.Encoder;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +15,7 @@ public class Autonomous
 {
 	private Robot robot; // I removed the final part so that I could reference robot
 	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
+	private PowerCubeManipulator Block;
 	char firstLetter = robot.gameMessage.charAt(0);
 	char secondLetter = robot.gameMessage.charAt(1);
 	char thirdLetter = robot.gameMessage.charAt(2);
@@ -62,7 +58,7 @@ public class Autonomous
         // Wait to start motors so gyro will be zero before first movement.
         Timer.delay(.50);
 
-		switch (program)
+		switch (program) 
 		{
 			case 0:	
 				SideAutoStraight();// Auto Program where we just go straight from the sides.
@@ -224,9 +220,9 @@ public class Autonomous
 		autoRotate(.5, -90);//Make sure to test this. rotate towards the side of the switch
 		}
 		
-		Block.raise;
+		Block.raise();
 		autoDrive(.50, 1200, true);//Make sure to test. Drive towards the switch in order to deposit it
-		Block.deposit; //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 	}
 	
 	//This if statement below details what to do if the robot is in line with the scale on either side but NOT the switch
@@ -238,9 +234,9 @@ public class Autonomous
 		else if(!LeftSide){//If the robot is on the right side
 		autoRotate(.5, -90);//Make sure to test. Rotate towards the scale
 		}
-		Block.raise;
+		Block.raise();
 		autoDrive(.5, 1200, true); //Make sure to test. Drive towards the scale to score.
-		Block.deposit; //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 	}
 	
 	//
@@ -253,13 +249,13 @@ public class Autonomous
 		autoRotate(.5, -90);//Make sure to test. rotate towards the side of the switch
 		}
 		
-		Block.raise;
-		autoDrive(.50, 1200, true);//Drive towards the switch in order to deposit it
-		Block.deposit; //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Block.raise();
+		autoDrive(.50, 1200, true);//Make sure to test.Drive towards the switch in order to deposit it
+		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 	}
 	else {
 		autoDrive(.5, 1200, true);//Make sure to test. Drive until aligned with the platform area
-		autoTurn(.8, 90); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
+		autoRotate(.8, 90); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
 		autoDrive(.5, 1200, true); //Make sure to test this. The robot should be right across from the side of the scale we want
 		
 	}
@@ -276,23 +272,23 @@ public class Autonomous
 		else if(isScoring == true) {
 			autoDrive(.5, 1200, true); //Make sure to test. Drive forward towards the center goal
 			if(firstLetter == 'L') {
-				autoRotate(.5, 90);//if the score plate on the switch is on the left turn that much
+				autoRotate(.5, 90);//Make sure to test. if the score plate on the switch is on the left turn that much
 			}
 			else if(firstLetter == 'R') {
-				autoRotate(.5, -90); //if the score plate is on the right, then turn right
+				autoRotate(.5, -90); //Make sure to test. if the score plate is on the right, then turn right
 			}
-			autoDrive(.5, 1200, true); //Drive forward so that the sides of the robot align with the scale
+			autoDrive(.5, 1200, true); //Make sure to test. Drive forward so that the sides of the robot align with the scale
 			
 			if(firstLetter == 'L') {
-				autoRotate(.5, 90);//Turn towards the scale
+				autoRotate(.5, 90);//Make sure to test. Turn towards the scale
 			}
 			else if(firstLetter == 'R') {
-				autoRotate(.5, -90);//Turn towards the scale
+				autoRotate(.5, -90);//Make sure to test. Turn towards the scale
 			}
 			
-			Block.raise;
-			autoDrive(.5, 1200, true);//Drive towards the scoring area
-			Block.deposit;
+			Block.raise();
+			autoDrive(.5, 1200, true);//Make sure to test. Drive towards the scoring area
+			Block.deposit();
 			
 		}
 	}
