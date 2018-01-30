@@ -52,7 +52,7 @@ public class Autonomous
         
 		//TODO NavX likely used, so just commenting out.
         // Set gyro/NavX to heading 0.
-        robot.gyro.reset();
+        //robot.gyro.reset();
 		Devices.navx.resetYaw();
 		
         // Wait to start motors so gyro will be zero before first movement.
@@ -124,7 +124,7 @@ public class Autonomous
 			// right so we set the turn value to - because - is a turn left which corrects our right
 			// drift.
 			
-			Devices.robotDrive.drive(power, -angle * gain);
+			Devices.robotDrive.tankDrive(power, -angle * gain);
 			
 			Timer.delay(.020);
 		}
@@ -211,84 +211,110 @@ public class Autonomous
 	public void SideAutonomous(boolean LeftSide){
 	// The first if statement is essentially saying that if the robot is in line with the switch on either side but NOT the scale
 	//then it should do the commands listed
+		Util.consoleLog("The robot is in line with the switch but not the scale");
 	if (((PosiRela(true) == true) || (PosiRela(false) == true)) && ((PosiRela2(false) == false)|| (PosiRela2(true) == false))){
 		autoDrive(.50, 1200, true); // Make sure to test it. The robot is driving on the straight away to the switch
+		Util.consoleLog("The robot should be moving on the straight away to the switch");
 		if(LeftSide){ //if the robot is on the left side
 		autoRotate(.5, 90);//Make sure to test this. rotate towards the side of the switch
+		Util.consoleLog("The robot is rotating clockwise towards the switch");
 		}
 		else if(!LeftSide){//if the robot is on the right side
 		autoRotate(.5, -90);//Make sure to test this. rotate towards the side of the switch
+		Util.consoleLog("The robot is rotating counterclockwise towards the switch");
 		}
 		
 		Block.raise();
 		autoDrive(.50, 1200, true);//Make sure to test. Drive towards the switch in order to deposit it
 		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Util.consoleLog("The robot is placing the block in the switch");
 	}
 	
 	//This if statement below details what to do if the robot is in line with the scale on either side but NOT the switch
-	else if(((PosiRela2(false) == true)|| (PosiRela2(true) == true)) && ((PosiRela(true) == false) || (PosiRela(false) == false))){
+	Util.consoleLog("The robot is in line with the scale but not the switch");
+	 if(((PosiRela2(false) == true)|| (PosiRela2(true) == true)) && ((PosiRela(true) == false) || (PosiRela(false) == false))){
 		autoDrive(.50, 1200, true);//Make sure to test this. BTW This is how much the robot should go on the straightaway
+		Util.consoleLog("The robot is on the straight away right now.");
 		if(LeftSide){ //If the robot is on the leftside
 		autoRotate(0.89, 90); //Make sure to test. rotate towards the scale
+		Util.consoleLog("The robot is turning clockwise towards the switch right now");
 		}
 		else if(!LeftSide){//If the robot is on the right side
 		autoRotate(.5, -90);//Make sure to test. Rotate towards the scale
+		Util.consoleLog("The robot is turning counterclockwise towards the switch right now");
 		}
 		Block.raise();
 		autoDrive(.5, 1200, true); //Make sure to test. Drive towards the scale to score.
 		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
-	}
+		Util.consoleLog("The robot has deposited the block in the scale");
+	 }
 	
-	//
+	//The third if statement details what should be done if the robot is in line with the scale and the switch
 	else if (((PosiRela2(false) == true)|| (PosiRela2(true) == true)) && ((PosiRela(true) == true) || (PosiRela(false) == true))){
+		Util.consoleLog("The robot is on the straight away right now ");
 		autoDrive(.50, 1200, true); // Make sure to test it and change it accordingly it should go to the switch
 		if(LeftSide){
 		autoRotate(.5, 90);//Make sure to test. rotate towards the side of the switch
+		Util.consoleLog("The robot is turning clockwise");
 		}
 		else if(!LeftSide){
 		autoRotate(.5, -90);//Make sure to test. rotate towards the side of the switch
+		Util.consoleLog("The robot is turning counterclockwise");
 		}
 		
 		Block.raise();
 		autoDrive(.50, 1200, true);//Make sure to test.Drive towards the switch in order to deposit it
 		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Util.consoleLog("The robot is depositing the block in the switch");
 	}
 	else {
 		autoDrive(.5, 1200, true);//Make sure to test. Drive until aligned with the platform area
 		autoRotate(.8, 90); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
 		autoDrive(.5, 1200, true); //Make sure to test this. The robot should be right across from the side of the scale we want
-		
+		Util.consoleLog("Doomsday Scenario...");
 	}
 	}
 	
 	public void CenterAuto(boolean isScoring) { //The boolean is scoring checks if we are going to score a block or not
 		if (isScoring == false) {
 			autoDrive(.5, 1200, true);//Make sure to test. Drive forward some
+			Util.consoleLog("Go forward");
 			autoRotate(.85, 45);//Make sure to test. Turn 45 degrees to the right
+			Util.consoleLog("Turning 45 degrees to the right");
 			autoDrive(.5, 1200, true);//Make sure to test. Go forward and break the line
+			Util.consoleLog("Going forward to break the line.");
 			autoDrive(0,0 ,true);// Make sure to test. Stop the bot.
+			Util.consoleLog("Stopping the robot");
 		}
 		
 		else if(isScoring == true) {
 			autoDrive(.5, 1200, true); //Make sure to test. Drive forward towards the center goal
+			Util.consoleLog("Driving forward towards the switch");
 			if(firstLetter == 'L') {
 				autoRotate(.5, 90);//Make sure to test. if the score plate on the switch is on the left turn that much
+			Util.consoleLog("Rotate towards the left to the switch");
 			}
 			else if(firstLetter == 'R') {
 				autoRotate(.5, -90); //Make sure to test. if the score plate is on the right, then turn right
+			Util.consoleLog("Rotate towards the right to the switch");
 			}
-			autoDrive(.5, 1200, true); //Make sure to test. Drive forward so that the sides of the robot align with the scale
-			
+			autoDrive(.5, 1200, true); //Make sure to test. Drive forward so that the sides of the robot align with the switch
+			Util.consoleLog("Drive forward towards the switch");
 			if(firstLetter == 'L') {
-				autoRotate(.5, 90);//Make sure to test. Turn towards the scale
+				autoRotate(.5, 90);//Make sure to test. Turn towards the switch
+				Util.consoleLog("Rotate clockwise to position towards switch");
 			}
 			else if(firstLetter == 'R') {
-				autoRotate(.5, -90);//Make sure to test. Turn towards the scale
+				autoRotate(.5, -90);//Make sure to test. Turn towards the switch
+				Util.consoleLog("Rotate counterclockwise to position towards switch");
+				
 			}
 			
 			Block.raise();
 			autoDrive(.5, 1200, true);//Make sure to test. Drive towards the scoring area
 			Block.deposit();
+			
+			Util.consoleLog("Score the block");
 			
 		}
 	}
