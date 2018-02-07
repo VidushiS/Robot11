@@ -15,7 +15,7 @@ public class Autonomous
 {
 	private Robot robot; // I removed the final part so that I could reference robot
 	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
-	private PowerCubeManipulator Block;
+	private CubeIntake Block;
 	char firstLetter = robot.gameMessage.charAt(0);
 	char secondLetter = robot.gameMessage.charAt(1);
 	char thirdLetter = robot.gameMessage.charAt(2);
@@ -90,7 +90,7 @@ public class Autonomous
 	*/
 	private void autoDrive(double power, int encoderCounts, boolean enableBrakes)
 	{
-		int		angle;
+		/*int		angle;
 		double	gain = .03;
 		
 		Util.consoleLog("pwr=%.2f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
@@ -131,7 +131,7 @@ public class Autonomous
 
 		Devices.robotDrive.tankDrive(0, 0, true);				
 		
-		Util.consoleLog("end: actual count=%d", Math.abs(Devices.encoder.get()));
+		Util.consoleLog("end: actual count=%d", Math.abs(Devices.encoder.get()));*/
 	}
 	
 	// Auto rotate left or right the specified angle. Left/right from robots forward view.
@@ -141,7 +141,7 @@ public class Autonomous
 
 	private void autoRotate(double power, int angle)
 	{
-		Util.consoleLog("pwr=%.2f  angle=%d", power, angle);
+		/*Util.consoleLog("pwr=%.2f  angle=%d", power, angle);
 		
 		Devices.navx.resetYaw();
 		
@@ -149,7 +149,7 @@ public class Autonomous
 
 		while (isAutoActive() && Math.abs((int) Devices.navx.getYaw()) < angle) {Timer.delay(.020);} 
 		
-		Devices.robotDrive.tankDrive(0, 0);
+		Devices.robotDrive.tankDrive(0, 0);*/
 	}
 	
 	
@@ -224,9 +224,9 @@ public class Autonomous
 		Util.consoleLog("The robot is rotating counterclockwise towards the switch");
 		}
 		
-		Block.raise();
+		Block.deposit();
 		autoDrive(.50, 1200, true);//Make sure to test. Drive towards the switch in order to deposit it
-		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Block.stopCubeIntake(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 		Util.consoleLog("The robot is placing the block in the switch");
 	}
 	
@@ -243,9 +243,9 @@ public class Autonomous
 		autoRotate(.5, -90);//Make sure to test. Rotate towards the scale
 		Util.consoleLog("The robot is turning counterclockwise towards the switch right now");
 		}
-		Block.raise();
+		Block.deposit();
 		autoDrive(.5, 1200, true); //Make sure to test. Drive towards the scale to score.
-		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Block.stopCubeIntake(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 		Util.consoleLog("The robot has deposited the block in the scale");
 	 }
 	
@@ -262,9 +262,9 @@ public class Autonomous
 		Util.consoleLog("The robot is turning counterclockwise");
 		}
 		
-		Block.raise();
+		Block.deposit();
 		autoDrive(.50, 1200, true);//Make sure to test.Drive towards the switch in order to deposit it
-		Block.deposit(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
+		Block.stopCubeIntake(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 		Util.consoleLog("The robot is depositing the block in the switch");
 	}
 	else {
@@ -310,9 +310,9 @@ public class Autonomous
 				
 			}
 			
-			Block.raise();
-			autoDrive(.5, 1200, true);//Make sure to test. Drive towards the scoring area
 			Block.deposit();
+			autoDrive(.5, 1200, true);//Make sure to test. Drive towards the scoring area
+			Block.stopCubeIntake();
 			
 			Util.consoleLog("Score the block");
 			
