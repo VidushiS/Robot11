@@ -78,6 +78,14 @@ public class Autonomous
 				
 				CenterAuto(true);// Auto Program which is used when starting from the center and we are scoring
 				break;
+				
+			case 5:
+				NotScoringFromSide(true);
+				break;
+			
+			case 6:
+				NotScoringFromSide(false);
+				break;
 		}
 		
 		Util.consoleLog("end");
@@ -157,6 +165,7 @@ public class Autonomous
 	public void SideAutoStraight(){
 		
 		autoDrive(.50, 1200, true); //Make sure to test. This is used to drive across the alliance line from the sides
+		Util.consoleLog("Driving forward to break the line from the sides");
 
 	}
 	
@@ -211,8 +220,9 @@ public class Autonomous
 	public void SideAutonomous(boolean LeftSide){
 	// The first if statement is essentially saying that if the robot is in line with the switch on either side but NOT the scale
 	//then it should do the commands listed
-		Util.consoleLog("The robot is in line with the switch but not the scale");
+		
 	if (((PosiRela(true) == true) || (PosiRela(false) == true)) && ((PosiRela2(false) == false)|| (PosiRela2(true) == false))){
+		Util.consoleLog("The robot is in line with the switch but not the scale");
 		autoDrive(.50, 1200, true); // Make sure to test it. The robot is driving on the straight away to the switch
 		Util.consoleLog("The robot should be moving on the straight away to the switch");
 		if(LeftSide){ //if the robot is on the left side
@@ -231,8 +241,9 @@ public class Autonomous
 	}
 	
 	//This if statement below details what to do if the robot is in line with the scale on either side but NOT the switch
-	Util.consoleLog("The robot is in line with the scale but not the switch");
-	 if(((PosiRela2(false) == true)|| (PosiRela2(true) == true)) && ((PosiRela(true) == false) || (PosiRela(false) == false))){
+	
+	else if(((PosiRela2(false) == true)|| (PosiRela2(true) == true)) && ((PosiRela(true) == false) || (PosiRela(false) == false))){
+		Util.consoleLog("The robot is in line with the scale but not the switch");
 		autoDrive(.50, 1200, true);//Make sure to test this. BTW This is how much the robot should go on the straightaway
 		Util.consoleLog("The robot is on the straight away right now.");
 		if(LeftSide){ //If the robot is on the leftside
@@ -267,14 +278,30 @@ public class Autonomous
 		Block.stopCubeIntake(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 		Util.consoleLog("The robot is depositing the block in the switch");
 	}
-	else {
-		autoDrive(.5, 1200, true);//Make sure to test. Drive until aligned with the platform area
-		autoRotate(.8, 90); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
-		autoDrive(.5, 1200, true); //Make sure to test this. The robot should be right across from the side of the scale we want
-		Util.consoleLog("Doomsday Scenario...");
-	}
 	}
 	
+	public void NotScoringFromSide(boolean LeftSide) {
+		autoDrive(.5, 1200, true);//Make sure to test. Drive until aligned with the platform area
+		if (LeftSide) {
+			autoRotate(.8, 90); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
+			Util.consoleLog("The robot is turning 90 degrees clockwise");
+		}
+		
+		else if(!LeftSide) {
+			autoRotate(.8, -90); //TODO test this. Turn counter clockwise towards the platform area
+			Util.consoleLog("The robot is turning 90 degrees counter clockwise");
+		}
+		
+		if((PosiRela2(true) == true) || (PosiRela2(false) == true)) {
+			autoDrive(.5, 1200, true); //TODO test this. The robot drives a shorter distance cause it is right next to to its respective side
+			Util.consoleLog("The robot is driving a short distance");
+		}
+		else if((PosiRela2(true) == false) || (PosiRela2(false) == false)) {
+			autoDrive(.5, 3000, true); //TODO test this. The robot drives a longer distance cause it is across its respective side
+			Util.consoleLog("The robot is driving a long distance");
+		}
+		Util.consoleLog("Doomsday Scenario...");
+	}
 	public void CenterAuto(boolean isScoring) { //The boolean is scoring checks if we are going to score a block or not
 		if (isScoring == false) {
 			autoDrive(.5, 1200, true);//Make sure to test. Drive forward some
