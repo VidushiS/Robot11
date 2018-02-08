@@ -16,6 +16,8 @@ class Teleop
 	public  LaunchPad			launchPad;
 	private boolean				autoTarget, invertDrive, altDriveMode;
 	private Vision				vision;
+	private RobotSpeedShifter   speedShifter;
+	private CubeIntake          Block;
 
 	// Constructor.
 
@@ -127,7 +129,7 @@ class Teleop
 			LCD.printLine(6, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), Devices.navx.getTotalYaw(), 
 					Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(8, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltate(), robot.monitorCompressorThread.getPressure());
-			//I CHANGED GETVOLTAGE TO GET VOLTATE.
+			//I CHANGED GETVOLTAGE TO GETVOLTATE.
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
 
@@ -247,6 +249,14 @@ class Teleop
 					DoOtherThing();
 				break;
 			*/
+			case BUTTON_RED_RIGHT:
+				if (launchPadEvent.control.latchedState)
+					speedShifter.slowSpeed();
+				else
+					speedShifter.fastSpeed();
+				break;
+				
+				
 			default:
 				break;
 			}
@@ -274,6 +284,11 @@ class Teleop
 					DoOtherThing();
 				break;
 			*/
+			case ROCKER_LEFT_FRONT:
+				if(robot.cameraThread != null)robot.cameraThread.ChangeCamera();
+				//invertDrive = !invertDrive;
+				break;
+				
 			default:
 				break;
 			}
@@ -370,6 +385,27 @@ class Teleop
 					DoOtherThing();
 				break;
 			 */
+			case TRIGGER:
+				if(button.latchedState) {
+					//Toggle Cube Pressure
+				}
+				else //Don't Toggle Cube Pressure??
+				break;
+				
+			case TOP_MIDDLE:
+				if(button.latchedState) {
+					Block.deposit();
+				}
+				else{
+					
+				}
+			case TOP_BACK:
+				if(button.latchedState) {
+					Block.intake();
+				}
+				else {
+					
+				}
 			default:
 				break;
 			}

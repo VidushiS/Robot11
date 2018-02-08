@@ -13,18 +13,20 @@ import jdk.nashorn.internal.ir.Block;
 
 public class Autonomous
 {
-	private Robot robot; // I removed the final part so that I could reference robot
+	private final Robot robot; // I removed the final part so that I could reference robot
 	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
 	private CubeIntake Block;
-	char firstLetter = robot.gameMessage.charAt(0);
-	char secondLetter = robot.gameMessage.charAt(1);
-	char thirdLetter = robot.gameMessage.charAt(2);
 	
+	
+	
+
 	Autonomous(Robot robot)
 	{
 		Util.consoleLog();
 		
-		this.robot = robot;		
+		this.robot = robot;	
+		
+		
 	}
 
 	public void dispose()
@@ -79,17 +81,12 @@ public class Autonomous
 				CenterAuto(true);// Auto Program which is used when starting from the center and we are scoring
 				break;
 				
-			case 5:
-				NotScoringFromSide(true);
-				break;
-			
-			case 6:
-				NotScoringFromSide(false);
-				break;
 		}
 		
 		Util.consoleLog("end");
 	}
+	
+	
 
 	//TODO May likely be used, will need modification to work.
 	/*
@@ -171,16 +168,16 @@ public class Autonomous
 	
 	//This method is used to direct the actions the robot should take from the left side. Follow the methods and the parameters to understand
 	public void LeftSide(){ 
-		PosiRela(true);
-		PosiRela2(true);
+		//PosiRela(true);
+		//PosiRela2(true);
 		SideAutonomous(true);
 	}
 	
 	//This method is used to direct the actions the robot should take from the right side. Follow the methods and the parameters to understand
 	public void RightSide(){
 	
-		PosiRela(false);
-		PosiRela2(false);
+		//PosiRela(false);
+		//PosiRela2(false);
 		SideAutonomous(false);
 	}
 	
@@ -189,15 +186,17 @@ public class Autonomous
 	
 	public boolean PosiRela(boolean Leftside){ //The boolean Leftside tells the position of the robot. 
 												//if true the robot is on the left, if false it is on the right.
-	boolean stuff; //I should find a better name but this boolean indicates whether or not 
+	boolean stuff = false; //I should find a better name but this boolean indicates whether or not 
 					//the robot's starting position is in line with the corresponding side on the scale
-	
+	char firstLetter = robot.gameMessage.charAt(0);
 	//The 'if' statement below is checking to see if the robot is in line with the switch. In line means that if the robot is left, the switch would be left as well 
 	if ((firstLetter == 'L' && Leftside == true) || (firstLetter == 'R' && Leftside == false)){
 	
 	stuff = true;//If the robot is in line, it is true
 	}
-	else stuff = false;//else it is false
+	else if ((firstLetter == 'L' && Leftside == false) || (firstLetter == 'R' && Leftside == true)){
+		stuff = false;//else it is false
+	}
 	
 	return stuff;
 	}
@@ -205,11 +204,15 @@ public class Autonomous
 	//This boolean has a similar setup to the previous one. It compares the robot position in relation to the scale (hence the name PosiRela2)
 	//It tells whether or not the side of the switch we are scoring on is in line with the robot's starting position
 	public boolean PosiRela2(boolean Leftside) {
-		boolean stuff;
+		boolean stuff = false;
+		char secondLetter = robot.gameMessage.charAt(1);
 		if((secondLetter == 'L' && Leftside == true) || (secondLetter == 'R' && Leftside == false)) {
 			stuff = true;
 		}
-		else stuff = false;
+		else if((secondLetter == 'L' && Leftside == false) || (secondLetter == 'R' && Leftside == true)) {
+			
+			stuff = false;
+		}
 		
 		return stuff;
 	}
@@ -221,7 +224,7 @@ public class Autonomous
 	// The first if statement is essentially saying that if the robot is in line with the switch on either side but NOT the scale
 	//then it should do the commands listed
 		
-	if (((PosiRela(true) == true) || (PosiRela(false) == true)) && ((PosiRela2(false) == false)|| (PosiRela2(true) == false))){
+	if (PosiRela(LeftSide) && !PosiRela2(LeftSide)){
 		Util.consoleLog("The robot is in line with the switch but not the scale");
 		autoDrive(.50, 1200, true); // Make sure to test it. The robot is driving on the straight away to the switch
 		Util.consoleLog("The robot should be moving on the straight away to the switch");
@@ -242,7 +245,7 @@ public class Autonomous
 	
 	//This if statement below details what to do if the robot is in line with the scale on either side but NOT the switch
 	
-	else if(((PosiRela2(false) == true)|| (PosiRela2(true) == true)) && ((PosiRela(true) == false) || (PosiRela(false) == false))){
+	else if(PosiRela2(LeftSide) && !PosiRela(LeftSide)){
 		Util.consoleLog("The robot is in line with the scale but not the switch");
 		autoDrive(.50, 1200, true);//Make sure to test this. BTW This is how much the robot should go on the straightaway
 		Util.consoleLog("The robot is on the straight away right now.");
@@ -261,7 +264,7 @@ public class Autonomous
 	 }
 	
 	//The third if statement details what should be done if the robot is in line with the scale and the switch
-	else if (((PosiRela2(false) == true)|| (PosiRela2(true) == true)) && ((PosiRela(true) == true) || (PosiRela(false) == true))){
+	else if (PosiRela2(LeftSide) && PosiRela(LeftSide)){
 		Util.consoleLog("The robot is on the straight away right now ");
 		autoDrive(.50, 1200, true); // Make sure to test it and change it accordingly it should go to the switch
 		if(LeftSide){
@@ -278,9 +281,7 @@ public class Autonomous
 		Block.stopCubeIntake(); //So this will be available in a separate class that controls the pneumatics for the Robot Arm. More on that later
 		Util.consoleLog("The robot is depositing the block in the switch");
 	}
-	}
-	
-	public void NotScoringFromSide(boolean LeftSide) {
+	else if (!PosiRela2(LeftSide) && !PosiRela(LeftSide)) {
 		autoDrive(.5, 1200, true);//Make sure to test. Drive until aligned with the platform area
 		if (LeftSide) {
 			autoRotate(.8, 90); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
@@ -292,17 +293,21 @@ public class Autonomous
 			Util.consoleLog("The robot is turning 90 degrees counter clockwise");
 		}
 		
-		if((PosiRela2(true) == true) || (PosiRela2(false) == true)) {
+		if(PosiRela2(LeftSide)) {
 			autoDrive(.5, 1200, true); //TODO test this. The robot drives a shorter distance cause it is right next to to its respective side
 			Util.consoleLog("The robot is driving a short distance");
 		}
-		else if((PosiRela2(true) == false) || (PosiRela2(false) == false)) {
+		else if(!PosiRela2(LeftSide)) {
 			autoDrive(.5, 3000, true); //TODO test this. The robot drives a longer distance cause it is across its respective side
 			Util.consoleLog("The robot is driving a long distance");
 		}
 		Util.consoleLog("Doomsday Scenario...");
+
 	}
+	}
+	
 	public void CenterAuto(boolean isScoring) { //The boolean is scoring checks if we are going to score a block or not
+		char firstLetter = robot.gameMessage.charAt(0);
 		if (isScoring == false) {
 			autoDrive(.5, 1200, true);//Make sure to test. Drive forward some
 			Util.consoleLog("Go forward");

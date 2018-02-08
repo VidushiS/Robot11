@@ -9,8 +9,8 @@ public class CubeIntake {
 	private Devices devices;
 	private Teleop teleop;
 	
-	private final WPI_TalonSRX	LeftCubeIntakeMotor = new WPI_TalonSRX(0); //TODO check assignments
-	private final WPI_TalonSRX RightCubeIntakeMotor = new WPI_TalonSRX(1); //TODO check assignments
+	private final WPI_TalonSRX	LeftCubeIntakeMotor = new WPI_TalonSRX(5); //TODO check assignments
+	private final WPI_TalonSRX RightCubeIntakeMotor = new WPI_TalonSRX(6); //TODO check assignments
 	
 	private final ValveDA gearOpen = new ValveDA(1);
 	private final ValveDA gearWrist = new ValveDA(2);
