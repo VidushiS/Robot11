@@ -235,7 +235,7 @@ class Teleop
 		public void ButtonDown(LaunchPadEvent launchPadEvent) 
 		{
 			LaunchPadControl	control = launchPadEvent.control;
-
+			int x = 3;
 			Util.consoleLog("%s, latchedState=%b", control.id.name(),  control.latchedState);
 
 			switch(control.id)
@@ -249,13 +249,49 @@ class Teleop
 					DoOtherThing();
 				break;
 			*/
+			case BUTTON_BLUE:
+				if (launchPadEvent.control.latchedState)
+					Block.deposit();
+				else
+					Block.intake();
+				break;
+				
 			case BUTTON_RED_RIGHT:
+				if (launchPadEvent.control.latchedState)
+					Block.WristIn();
+				else
+					Block.WristOut();;
+				break;
+			
+			case BUTTON_RED:
 				if (launchPadEvent.control.latchedState)
 					speedShifter.slowSpeed();
 				else
 					speedShifter.fastSpeed();
 				break;
 				
+			case BUTTON_BLUE_RIGHT:
+				if(launchPadEvent.control.latchedState && x % 4 == 0) {
+					Block.MotorStartIntake();
+					x += 1;
+				}
+				else if (!launchPadEvent.control.latchedState && x % 4 == 1) {
+					Block.WristOpen();
+					x += 1;
+				}
+				else if (launchPadEvent.control.latchedState && x % 4 == 2) {
+					Block.WristClose();
+					x += 1;
+				}
+				else if (!launchPadEvent.control.latchedState && x % 4 == 3) {
+					Block.stopCubeIntake();
+					x += 1;
+				}
+			
+			case BUTTON_YELLOW:
+				if(launchPadEvent.control.latchedState) {
+					
+				}
 				
 			default:
 				break;

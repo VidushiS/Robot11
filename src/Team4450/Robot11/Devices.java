@@ -61,11 +61,11 @@ public class Devices
 	      InitializeCANTalon(RSlaveCanTalon);
 	      
 	      // Configure CAN Talons with correct inversions.
-	      LFCanTalon.setInverted(true);
-		  LRCanTalon.setInverted(true);
+	      LFCanTalon.setInverted(false);
+		  LRCanTalon.setInverted(false);
 		  
-		  RFCanTalon.setInverted(true);
-		  RRCanTalon.setInverted(true);
+		  RFCanTalon.setInverted(false);
+		  RRCanTalon.setInverted(false);
 		  
 		  LSlaveCanTalon.setInverted(false);
 		  RSlaveCanTalon.setInverted(false);

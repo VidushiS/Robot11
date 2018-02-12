@@ -31,26 +31,48 @@ public class CubeIntake {
 		if(RightCubeIntakeMotor != null) RightCubeIntakeMotor.free();
 	}
 	public void deposit() {
-	//	LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
-		//RightCubeIntakeMotor.set(.5);
+		LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
+		RightCubeIntakeMotor.set(.5); //TODO test values
 		
-		//gearOpen.SetA();
-		//gearWrist.SetB();
+		gearOpen.SetA();
+		gearWrist.SetB();
 		Util.consoleLog("The cube is being deposited");
 	}
 	public void intake() {
-		//LeftCubeIntakeMotor.set(-.5);
-		//RightCubeIntakeMotor.set(-.5);
+		LeftCubeIntakeMotor.set(-.5); //TODO test
+		RightCubeIntakeMotor.set(-.5);// TODO test
 		
-		//gearOpen.SetB();
-		//gearWrist.SetA();
+		gearOpen.SetB();
+		gearWrist.SetA();
 		Util.consoleLog("The cube is being taken in to the robot");
 	}
+	
 	public void stopCubeIntake(){
 		Util.consoleLog();
 		
-		//LeftCubeIntakeMotor.set(0);
-		//RightCubeIntakeMotor.set(0);
+		LeftCubeIntakeMotor.set(0); 
+		RightCubeIntakeMotor.set(0);
 		
+	}
+	
+	public void WristIn() {
+		gearWrist.SetA();
+	}
+	public void WristOut() {
+		gearWrist.SetB();
+	}
+	public void MotorStartIntake() {
+		LeftCubeIntakeMotor.set(.5);
+		RightCubeIntakeMotor.set(.5);
+	}
+	public void MotorStartDeposit() {
+		LeftCubeIntakeMotor.set(-.5);
+		RightCubeIntakeMotor.set(-.5);
+	}
+	public void WristOpen() {
+		gearOpen.SetA();
+	}
+	public void WristClose() {
+		gearOpen.SetB();
 	}
 }

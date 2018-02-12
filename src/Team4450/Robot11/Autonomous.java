@@ -65,21 +65,23 @@ public class Autonomous
 			case 0:	
 				SideAutoStraight();// Auto Program where we just go straight from the sides.
 				break;
+			
 			case 1:
-				LeftSide(); // Auto Program which is used for the left side
-				break;
-			case 2:
-				
-				RightSide();// Auto Program which is used for the right side
-				break;
-			case 3:
-				
 				CenterAuto(false);//Auto Program which is used when starting from the center and we ARENT scoring
 				break;
-			case 4:
 				
+			case 2:
 				CenterAuto(true);// Auto Program which is used when starting from the center and we are scoring
 				break;
+				
+			case 3:
+				LeftSide(); // Auto Program which is used for the left side
+				break;
+				
+			case 4:
+				RightSide();// Auto Program which is used for the right side
+				break;
+				
 				
 		}
 		
@@ -158,26 +160,23 @@ public class Autonomous
 	}
 	
 	
+	double rotate;//Used only for 90 degree turns. Power when turning.
+	int angled;//Used only for 90 degree turns. Angle to turn to.
 	
 	public void SideAutoStraight(){
 		
-		autoDrive(.50, 1200, true); //Make sure to test. This is used to drive across the alliance line from the sides
+		autoDrive(.50, 1200, true); //TODO test
 		Util.consoleLog("Driving forward to break the line from the sides");
 
 	}
 	
 	//This method is used to direct the actions the robot should take from the left side. Follow the methods and the parameters to understand
 	public void LeftSide(){ 
-		//PosiRela(true);
-		//PosiRela2(true);
 		SideAutonomous(true);
 	}
 	
 	//This method is used to direct the actions the robot should take from the right side. Follow the methods and the parameters to understand
 	public void RightSide(){
-	
-		//PosiRela(false);
-		//PosiRela2(false);
 		SideAutonomous(false);
 	}
 	
@@ -229,11 +228,11 @@ public class Autonomous
 		autoDrive(.50, 1200, true); // Make sure to test it. The robot is driving on the straight away to the switch
 		Util.consoleLog("The robot should be moving on the straight away to the switch");
 		if(LeftSide){ //if the robot is on the left side
-		autoRotate(.5, 90);//Make sure to test this. rotate towards the side of the switch
+		autoRotate(rotate, angled);//Make sure to test this. rotate towards the side of the switch
 		Util.consoleLog("The robot is rotating clockwise towards the switch");
 		}
 		else if(!LeftSide){//if the robot is on the right side
-		autoRotate(.5, -90);//Make sure to test this. rotate towards the side of the switch
+		autoRotate(rotate, -angled);//Make sure to test this. rotate towards the side of the switch
 		Util.consoleLog("The robot is rotating counterclockwise towards the switch");
 		}
 		
@@ -250,11 +249,11 @@ public class Autonomous
 		autoDrive(.50, 1200, true);//Make sure to test this. BTW This is how much the robot should go on the straightaway
 		Util.consoleLog("The robot is on the straight away right now.");
 		if(LeftSide){ //If the robot is on the leftside
-		autoRotate(0.89, 90); //Make sure to test. rotate towards the scale
+		autoRotate(rotate, angled); //Make sure to test. rotate towards the scale
 		Util.consoleLog("The robot is turning clockwise towards the switch right now");
 		}
 		else if(!LeftSide){//If the robot is on the right side
-		autoRotate(.5, -90);//Make sure to test. Rotate towards the scale
+		autoRotate(rotate, -angled);//Make sure to test. Rotate towards the scale
 		Util.consoleLog("The robot is turning counterclockwise towards the switch right now");
 		}
 		Block.deposit();
@@ -268,11 +267,11 @@ public class Autonomous
 		Util.consoleLog("The robot is on the straight away right now ");
 		autoDrive(.50, 1200, true); // Make sure to test it and change it accordingly it should go to the switch
 		if(LeftSide){
-		autoRotate(.5, 90);//Make sure to test. rotate towards the side of the switch
+		autoRotate(rotate, angled);//Make sure to test. rotate towards the side of the switch
 		Util.consoleLog("The robot is turning clockwise");
 		}
 		else if(!LeftSide){
-		autoRotate(.5, -90);//Make sure to test. rotate towards the side of the switch
+		autoRotate(rotate, -angled);//Make sure to test. rotate towards the side of the switch
 		Util.consoleLog("The robot is turning counterclockwise");
 		}
 		
@@ -284,12 +283,12 @@ public class Autonomous
 	else if (!PosiRela2(LeftSide) && !PosiRela(LeftSide)) {
 		autoDrive(.5, 1200, true);//Make sure to test. Drive until aligned with the platform area
 		if (LeftSide) {
-			autoRotate(.8, 90); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
+			autoRotate(rotate, angled); //Make sure to test this. BTW Turn right 90 degrees so that the robot can go in the platform area
 			Util.consoleLog("The robot is turning 90 degrees clockwise");
 		}
 		
 		else if(!LeftSide) {
-			autoRotate(.8, -90); //TODO test this. Turn counter clockwise towards the platform area
+			autoRotate(rotate, -angled); //TODO test this. Turn counter clockwise towards the platform area
 			Util.consoleLog("The robot is turning 90 degrees counter clockwise");
 		}
 		
