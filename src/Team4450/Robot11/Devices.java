@@ -37,7 +37,9 @@ public class Devices
 
 	  public static NavX				navx;
 	  
-	  public final static Encoder	encoder = new Encoder(3, 4, true, EncodingType.k4X);
+	  public final static Encoder	SRXEncoder = new Encoder(0, 1, true, EncodingType.k4X);
+	  
+	  public final static Encoder   WinchEncoder = new Encoder(2, 3, true, EncodingType.k4X);
 	  // Create RobotDrive object for CAN Talon controllers.
 	  
 	  public static void InitializeCANTalonDrive()
