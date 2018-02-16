@@ -98,19 +98,19 @@ public class Autonomous
 	*/
 	private void autoDrive(double power, int encoderCounts, boolean enableBrakes)
 	{
-		/*int		angle;
+		int		angle;
 		double	gain = .03;
 		
 		Util.consoleLog("pwr=%.2f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
 
 		if (robot.isComp) Devices.SetCANTalonBrakeMode(enableBrakes);
 
-		Devices.encoder.reset();
+		Devices.SRXEncoder.reset();
 		Devices.navx.resetYaw();
 		
-		while (isAutoActive() && Math.abs(Devices.encoder.get()) < encoderCounts) 
+		while (isAutoActive() && Math.abs(Devices.SRXEncoder.get()) < encoderCounts) 
 		{
-			LCD.printLine(4, "encoder=%d", Devices.encoder.get());
+			LCD.printLine(4, "encoder=%d", Devices.SRXEncoder.get());
 			
 			// Angle is negative if robot veering left, positive if veering right when going forward.
 			// It is opposite when going backward. Note that for this robot, - power means forward and
@@ -139,7 +139,7 @@ public class Autonomous
 
 		Devices.robotDrive.tankDrive(0, 0, true);				
 		
-		Util.consoleLog("end: actual count=%d", Math.abs(Devices.encoder.get()));*/
+		Util.consoleLog("end: actual count=%d", Math.abs(Devices.SRXEncoder.get()));
 	}
 	
 	// Auto rotate left or right the specified angle. Left/right from robots forward view.
@@ -149,7 +149,7 @@ public class Autonomous
 
 	private void autoRotate(double power, int angle)
 	{
-		/*Util.consoleLog("pwr=%.2f  angle=%d", power, angle);
+		Util.consoleLog("pwr=%.2f  angle=%d", power, angle);
 		
 		Devices.navx.resetYaw();
 		
@@ -157,7 +157,7 @@ public class Autonomous
 
 		while (isAutoActive() && Math.abs((int) Devices.navx.getYaw()) < angle) {Timer.delay(.020);} 
 		
-		Devices.robotDrive.tankDrive(0, 0);*/
+		Devices.robotDrive.tankDrive(0, 0);
 	}
 	
 	
@@ -181,40 +181,32 @@ public class Autonomous
 		SideAutonomous(false);
 	}
 	
-	//The boolean below compares the robot position in relation to the switch (hence the name PosiRela)
-	//It tells whether or not the side of the switch we are scoring on is in line with the robot's starting position
-	
-	public boolean PosiRela(boolean Leftside){ //The boolean Leftside tells the position of the robot. 
-												//if true the robot is on the left, if false it is on the right.
-	boolean stuff = false; //I should find a better name but this boolean indicates whether or not 
-					//the robot's starting position is in line with the corresponding side on the scale
+	public boolean PosiRela(boolean Leftside){ 
+	boolean startPos = false; 
 	char firstLetter = robot.gameMessage.charAt(0);
-	//The 'if' statement below is checking to see if the robot is in line with the switch. In line means that if the robot is left, the switch would be left as well 
 	if ((firstLetter == 'L' && Leftside == true) || (firstLetter == 'R' && Leftside == false)){
 	
-	stuff = true;//If the robot is in line, it is true
+	startPos = true;//If the robot is in line, it is true
 	}
 	else if ((firstLetter == 'L' && Leftside == false) || (firstLetter == 'R' && Leftside == true)){
-		stuff = false;//else it is false
+		startPos = false;//else it is false
 	}
 	
-	return stuff;
+	return startPos;
 	}
 	
-	//This boolean has a similar setup to the previous one. It compares the robot position in relation to the scale (hence the name PosiRela2)
-	//It tells whether or not the side of the switch we are scoring on is in line with the robot's starting position
-	public boolean PosiRela2(boolean Leftside) {
-		boolean stuff = false;
+		public boolean PosiRela2(boolean Leftside) {
+		boolean startPos = false;
 		char secondLetter = robot.gameMessage.charAt(1);
 		if((secondLetter == 'L' && Leftside == true) || (secondLetter == 'R' && Leftside == false)) {
-			stuff = true;
+			startPos = true;
 		}
 		else if((secondLetter == 'L' && Leftside == false) || (secondLetter == 'R' && Leftside == true)) {
 			
-			stuff = false;
+			startPos = false;
 		}
 		
-		return stuff;
+		return startPos;
 	}
 	
 	//The side autonomous is very similar for both the left and right starting positions. So the two position-relation booleans above can be used

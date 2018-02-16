@@ -21,6 +21,9 @@ public class WinchToogle {
 	public void WinchMotorUp() {
 		winchMotor.set(0.5);
 	}
+	public void WinchMotorStop() {
+		winchMotor.set(0);
+	}
 	public void WinchMotorDown() {
 		winchMotor.set(-.5);
 	}

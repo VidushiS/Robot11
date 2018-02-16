@@ -18,6 +18,7 @@ class Teleop
 	private Vision				vision;
 	private RobotSpeedShifter   speedShifter;
 	private CubeIntake          Block;
+	private WinchToogle			Winch;
 
 	// Constructor.
 
@@ -289,9 +290,21 @@ class Teleop
 				}
 			
 			case BUTTON_YELLOW:
-				if(launchPadEvent.control.latchedState) {
-					
+				while(launchPadEvent.control.latchedState) {
+					Winch.WinchMotorUp();	
 				}
+				while(!launchPadEvent.control.latchedState) {
+					Winch.WinchMotorStop();
+				}
+				
+			case BUTTON_GREEN:
+				while(launchPadEvent.control.latchedState) {
+					Winch.WinchMotorDown();	
+					}
+				while(!launchPadEvent.control.latchedState) {
+					Winch.WinchMotorStop();
+					}
+
 				
 			default:
 				break;
