@@ -51,6 +51,7 @@ public class Autonomous
 		//TODO Encoder likely used, so just commenting out.
 		// Initialize encoder.
 		Devices.SRXEncoder.reset();
+		Devices.SRXEncoder2.reset();
 		Devices.WinchEncoder.reset();
         
 		//TODO NavX likely used, so just commenting out.
@@ -106,12 +107,13 @@ public class Autonomous
 		if (robot.isComp) Devices.SetCANTalonBrakeMode(enableBrakes);
 
 		Devices.SRXEncoder.reset();
+		Devices.SRXEncoder2.reset();
 		Devices.navx.resetYaw();
 		
-		while (isAutoActive() && Math.abs(Devices.SRXEncoder.get()) < encoderCounts) 
+		while (isAutoActive() && Math.abs(Devices.SRXEncoder.get()) < encoderCounts && Math.abs(Devices.SRXEncoder2.get()) < encoderCounts) 
 		{
-			LCD.printLine(4, "encoder=%d", Devices.SRXEncoder.get());
-			
+			LCD.printLine(4, "Wheel encoder 1 =%d", Devices.SRXEncoder.get());
+			LCD.printLine(6, "Wheel encoder 2 =%d", Devices.SRXEncoder2.get());
 			// Angle is negative if robot veering left, positive if veering right when going forward.
 			// It is opposite when going backward. Note that for this robot, - power means forward and
 			// + power means backward.
@@ -139,7 +141,8 @@ public class Autonomous
 
 		Devices.robotDrive.tankDrive(0, 0, true);				
 		
-		Util.consoleLog("end: actual count=%d", Math.abs(Devices.SRXEncoder.get()));
+		Util.consoleLog("end: actual count of Encoder 1=%d", Math.abs(Devices.SRXEncoder.get()));
+		Util.consoleLog("end: actual count of Encoder 2=%d", Math.abs(Devices.SRXEncoder2.get()));
 	}
 	
 	// Auto rotate left or right the specified angle. Left/right from robots forward view.

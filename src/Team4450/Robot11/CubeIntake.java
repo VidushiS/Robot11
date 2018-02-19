@@ -5,74 +5,84 @@ package Team4450.Robot11;
 import Team4450.Lib.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class CubeIntake {
-	
-	private Devices devices;
-	private Teleop teleop;
-	
-	private final WPI_TalonSRX	LeftCubeIntakeMotor = new WPI_TalonSRX(5); //TODO check assignments
-	private final WPI_TalonSRX RightCubeIntakeMotor = new WPI_TalonSRX(6); //TODO check assignments
-	
-	private final ValveDA gearOpen = new ValveDA(1);
-	private final ValveDA gearWrist = new ValveDA(2);
 
+	private Teleop teleop;
+	public boolean isOut;
+	public boolean isIntaking;
+	public boolean isDepositing;
+	public boolean isGrabberOpen;
 	public void PowerCubeManipulator(Devices devices, Teleop teleop) {
 		Util.consoleLog();
-		this.devices = devices;
 		this.teleop = teleop;
 		
-		devices.InitializeCANTalon(LeftCubeIntakeMotor);
-		LeftCubeIntakeMotor.setSafetyEnabled(true);
-		devices.InitializeCANTalon(RightCubeIntakeMotor);
-		RightCubeIntakeMotor.setSafetyEnabled(true);
 	}
 	public void Dispose() {
 		Util.consoleLog();
-		if(LeftCubeIntakeMotor != null) LeftCubeIntakeMotor.free();
-		if(RightCubeIntakeMotor != null) RightCubeIntakeMotor.free();
+		if(Devices.LeftCubeIntakeMotor != null) Devices.LeftCubeIntakeMotor.free();
+		if(Devices.RightCubeIntakeMotor != null) Devices.RightCubeIntakeMotor.free();
 	}
 	public void deposit() {
-		LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
-		RightCubeIntakeMotor.set(.5); //TODO test values
+		Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
+		Devices.RightCubeIntakeMotor.set(.5); //TODO test values
 		
-		gearOpen.SetA();
-		gearWrist.SetB();
+		Devices.gearOpen.SetA();
+		Devices.gearWrist.SetB();
 		Util.consoleLog("The cube is being deposited");
+		
+		isOut = true;
 	}
 	public void intake() {
-		LeftCubeIntakeMotor.set(-.5); //TODO test
-		RightCubeIntakeMotor.set(-.5);// TODO test
+		Devices.LeftCubeIntakeMotor.set(-.5); //TODO test
+		Devices.RightCubeIntakeMotor.set(-.5);// TODO test
 		
-		gearOpen.SetB();
-		gearWrist.SetA();
+		Devices.gearOpen.SetB();
+		Devices.gearWrist.SetA();
 		Util.consoleLog("The cube is being taken in to the robot");
+		
+		isOut = false;
 	}
 	
 	public void stopCubeIntake(){
 		Util.consoleLog();
 		
-		LeftCubeIntakeMotor.set(0); 
-		RightCubeIntakeMotor.set(0);
+		Devices.LeftCubeIntakeMotor.set(0); 
+		Devices.RightCubeIntakeMotor.set(0);
 		
 	}
 	
 	public void WristIn() {
-		gearWrist.SetA();
+		Devices.gearWrist.SetA();
+		
+		isOut = false;
 	}
 	public void WristOut() {
-		gearWrist.SetB();
+		Devices.gearWrist.SetB();
+		
+		isOut = true;
 	}
 	public void MotorStartIntake() {
-		LeftCubeIntakeMotor.set(.5);
-		RightCubeIntakeMotor.set(.5);
+		Devices.LeftCubeIntakeMotor.set(.5);
+		Devices.RightCubeIntakeMotor.set(.5);
+		
+		isIntaking = true;
+		isDepositing = false;
 	}
 	public void MotorStartDeposit() {
-		LeftCubeIntakeMotor.set(-.5);
-		RightCubeIntakeMotor.set(-.5);
+		Devices.LeftCubeIntakeMotor.set(-.5);
+		Devices.RightCubeIntakeMotor.set(-.5);
+		
+		isIntaking = false;
+		isDepositing = true;
 	}
 	public void WristOpen() {
-		gearOpen.SetA();
+		Devices.gearOpen.SetA();
+		
+		isGrabberOpen = true;
 	}
 	public void WristClose() {
-		gearOpen.SetB();
+		Devices.gearOpen.SetB();
+		
+		isGrabberOpen = false;
 	}
+	
 }

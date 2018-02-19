@@ -26,6 +26,8 @@ public class Robot extends SampleRobot
 {
   static final String  	PROGRAM_NAME = "VS 2/7/2018 Version 1";
 
+  public boolean isTeleOpTrue;
+  
   public Properties		robotProperties;
   
   public boolean		isClone = false, isComp = false;
@@ -37,6 +39,8 @@ public class Robot extends SampleRobot
   Thread               	monitorBatteryThread, monitorPDPThread;
   MonitorCompressor		monitorCompressorThread;
   CameraFeed			cameraThread;
+  
+  CubeIntake Block = new CubeIntake();
       
   // Constructor.
   
@@ -142,12 +146,16 @@ public class Robot extends SampleRobot
 
 		  SmartDashboard.putBoolean("Disabled", true);
 		  SmartDashboard.putBoolean("Auto Mode", false);
-		  SmartDashboard.putBoolean("Teleop Mode", false);
+		  SmartDashboard.putBoolean("Teleop Mode", isTeleOpTrue);
 		  SmartDashboard.putBoolean("FMS", Devices.ds.isFMSAttached());
 		  SmartDashboard.putBoolean("AutoTarget", false);
 		  SmartDashboard.putBoolean("TargetLocked", false);
 		  SmartDashboard.putBoolean("Overload", false);
-		  SmartDashboard.putNumber("AirPressure", 0);
+		  SmartDashboard.putNumber("AirPressure", Devices.compressor.getCompressorCurrent());
+		  SmartDashboard.putBoolean("Spit", Block.isDepositing);
+		  SmartDashboard.putBoolean("Intake", Block.isIntaking);
+		  SmartDashboard.putBoolean("Deployed", Block.isOut);
+		  SmartDashboard.putBoolean("Grabber", Block.isGrabberOpen);
 		  
 		  Util.consoleLog("end");
 	  }
@@ -168,6 +176,7 @@ public class Robot extends SampleRobot
     	  SmartDashboard.putBoolean("Disabled", false);
     	  SmartDashboard.putBoolean("Auto Mode", true);
         
+    	  isTeleOpTrue = false;
     	  // Make available the alliance (red/blue) and staring position as
     	  // set on the driver station or FMS.
         
@@ -212,6 +221,8 @@ public class Robot extends SampleRobot
       	  SmartDashboard.putBoolean("Disabled", false);
       	  SmartDashboard.putBoolean("Teleop Mode", true);
         
+      	isTeleOpTrue = true;
+      	  
       	  alliance = Devices.ds.getAlliance();
       	  location = Devices.ds.getLocation();
     	  eventName = Devices.ds.getEventName();

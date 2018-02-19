@@ -237,6 +237,8 @@ class Teleop
 		{
 			LaunchPadControl	control = launchPadEvent.control;
 			int x = 3;
+			int y = 3;
+			int z = 3;
 			Util.consoleLog("%s, latchedState=%b", control.id.name(),  control.latchedState);
 
 			switch(control.id)
@@ -272,40 +274,36 @@ class Teleop
 				break;
 				
 			case BUTTON_BLUE_RIGHT:
-				if(launchPadEvent.control.latchedState && x % 4 == 0) {
-					Block.MotorStartIntake();
-					x += 1;
+				if(launchPadEvent.control.latchedState) {
+					Block.intake();
 				}
-				else if (!launchPadEvent.control.latchedState && x % 4 == 1) {
-					Block.WristOpen();
-					x += 1;
-				}
-				else if (launchPadEvent.control.latchedState && x % 4 == 2) {
-					Block.WristClose();
-					x += 1;
-				}
-				else if (!launchPadEvent.control.latchedState && x % 4 == 3) {
-					Block.stopCubeIntake();
-					x += 1;
-				}
-			
+				else 
+					
+				
+				break;
+				
 			case BUTTON_YELLOW:
-				while(launchPadEvent.control.latchedState) {
-					Winch.WinchMotorUp();	
-				}
-				while(!launchPadEvent.control.latchedState) {
-					Winch.WinchMotorStop();
-				}
-				
-			case BUTTON_GREEN:
-				while(launchPadEvent.control.latchedState) {
-					Winch.WinchMotorDown();	
+				if(launchPadEvent.control.latchedState) {
+					if(z % 2 == 1) {
+						Winch.WinchMotorUp();
+						z += 1;
 					}
-				while(!launchPadEvent.control.latchedState) {
-					Winch.WinchMotorStop();
+					else if(z % 2 == 0) {
+						Winch.WinchMotorDown();
+						z += 1;
 					}
+				}
+				else Winch.WinchMotorStop();
 
+				break;
 				
+			case ROCKER_LEFT_FRONT:
+				if (robot.cameraThread != null)robot.cameraThread.ChangeCamera();
+				
+			break;
+			
+			case ROCKER_RIGHT:
+				if (robot.cameraThread != null)robot.cameraThread.ChangeCamera();
 			default:
 				break;
 			}
@@ -334,7 +332,7 @@ class Teleop
 				break;
 			*/
 			case ROCKER_LEFT_FRONT:
-				if(robot.cameraThread != null)robot.cameraThread.ChangeCamera();
+				
 				//invertDrive = !invertDrive;
 				break;
 				
@@ -436,21 +434,21 @@ class Teleop
 			 */
 			case TRIGGER:
 				if(button.latchedState) {
-					//Toggle Cube Pressure
+					Block.WristOpen();
 				}
-				else //Don't Toggle Cube Pressure??
+				else Block.WristClose();
 				break;
 				
 			case TOP_MIDDLE:
 				if(button.latchedState) {
-					Block.deposit();
+					Block.MotorStartIntake();
 				}
 				else{
 					
 				}
 			case TOP_BACK:
 				if(button.latchedState) {
-					Block.intake();
+					Block.MotorStartDeposit();
 				}
 				else {
 					

@@ -7,6 +7,8 @@ Port	Device			Description
 2		CanTalon		Left rear drive motor.
 3		CanTalon		Right front drive motor.
 4		CanTalon		Right rear drive motor.
+5		CanTalon    Left Cube Grabber motor.
+6		CanTalon    Right Cube Grabber motor.
 
 PWM Ports
 Port	Device			Description
@@ -46,22 +48,30 @@ Port	Device			Description
 Left Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
-Trigger					Shift gear box low/high.
+TRIGGER					Shift gear box low/high.
 
 Right Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
-Trigger					Toggle alternate driving mode.
+TRIGGER					Toggle alternate driving mode.
 
 Utility Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
-
+TRIGGER					Toggle Claw Fingers gripping the Power Cube.
+TOP_MIDDLE				Manually toggle Claw motors in ejecting direction.
+TOP_ BACK				Manually toggle Claw motors in the intakeing direction.
 
 LaunchPad
 Button Name				Function
 -----------------------------------------------------------------------------------
-
+BUTTON_BLUE				Deploy forklift arms.
+BUTTON_RED_RIGHT		Toggle wrist folding in or out.
+BUTTON_RED				Shift gears.
+BUTTON_BLUE_RIGHT		Toggle Claw intake automation.
+BUTTON_YELLOW			Switch winches
+ROCKER_LEFT_FRONT		Switch Cameras
+ROCKER_RIGHT			Switch Cameras
 
 Dashboard Indicators/Controls
 Name					Type			Description
@@ -75,4 +85,8 @@ Teleop Mode				boolean			True when robot is in tele-operated mode.
 FMS						boolean			True when robot is connected to the FMS.
 Overload				boolean			True when steering assist is on.
 AirPressure				Number			Is set to the current air pressure in psi.
+Deployed				boolean			True when cube grabber is extended.
+Intake					boolean			True when cube grabber motors running in intake direction.
+Spit					boolean			True when cube grabber motors running in spit direction.
+Grabber					boolean			True when cube grabber is in the open position.
 		  
