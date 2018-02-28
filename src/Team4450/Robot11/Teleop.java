@@ -19,6 +19,7 @@ class Teleop
 	private RobotSpeedShifter   speedShifter;
 	private CubeIntake          Block;
 	private WinchToogle			Winch;
+	
 
 	// Constructor.
 
@@ -42,14 +43,17 @@ class Teleop
 		if (utilityStick != null) utilityStick.dispose();
 		if (launchPad != null) launchPad.dispose();
 	}
-
+	
+	
 	void OperatorControl()
 	{
-		double	rightY = 0, leftY = 0, utilX = 0, rightX = 0, leftX = 0;
+		double	rightY = 0, leftY = 0, utilX = 0, rightX = 0, leftX = 0, utilY = 0;
 		double	gain = .01;
-		boolean	steeringAssistMode = false;
+		boolean steeringAssistMode = false;
 		int		angle;
-
+		int WinchEncoderCounts = 980; //TODO check the encoder counts to make sure it works
+		int WinchSlackerEncoderCounts = 240; //TODO check the encoder counts to make sure it works
+			
 		// Motor safety turned off during initialization.
 		Devices.robotDrive.setSafetyEnabled(false);
 
@@ -125,6 +129,7 @@ class Teleop
 			leftX = stickLogCorrection(leftStick.GetX());	// left/right
 
 			utilX = utilityStick.GetX();
+			utilY = utilityStick.GetY();
 
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f  utilX=%.4f", leftY, rightY, utilX);
 			LCD.printLine(6, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), Devices.navx.getTotalYaw(), 
@@ -165,7 +170,7 @@ class Teleop
 						// right so we set the turn value to - because - is a turn left which corrects our right
 						// drift.
 
-						Devices.robotDrive.curvatureDrive(rightY, -angle * gain, true);
+						Devices.robotDrive.curvatureDrive(rightY, angle * gain, false);
 
 						steeringAssistMode = true;
 					}
@@ -180,7 +185,14 @@ class Teleop
 				else
 					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 			}
-
+			
+			/*if(Math.abs(Devices.WinchEncoder.get())<= WinchEncoderCounts) {
+				Devices.winchMotor.set(utilY);	
+			}
+			else if (Math.abs(Devices.WinchEncoder.get())> WinchEncoderCounts) {
+				Devices.winchMotor.set(0);
+			}
+			*/
 			// Update the robot heading indicator on the DS.
 
 			SmartDashboard.putNumber("Gyro", Devices.navx.getHeading());
@@ -189,7 +201,7 @@ class Teleop
 
 			Timer.delay(.020);	// wait 20ms for update from driver station.
 		}
-
+			
 		// End of teleop mode.
 
 		Util.consoleLog("end");
@@ -252,20 +264,20 @@ class Teleop
 					DoOtherThing();
 				break;
 			*/
-			case BUTTON_BLUE:
-				if (launchPadEvent.control.latchedState)
+		/*	case BUTTON_BLUE:
+				if (launchPadEvent.control.latchedState && !Block.isDepositing())
 					Block.deposit();
 				else
 					Block.intake();
 				break;
 				
 			case BUTTON_RED_RIGHT:
-				if (launchPadEvent.control.latchedState)
+				if (launchPadEvent.control.latchedState && !Block.isOut())
 					Block.WristIn();
 				else
 					Block.WristOut();;
 				break;
-			
+			*/
 			case BUTTON_RED:
 				if (launchPadEvent.control.latchedState)
 					speedShifter.slowSpeed();
@@ -273,27 +285,22 @@ class Teleop
 					speedShifter.fastSpeed();
 				break;
 				
-			case BUTTON_BLUE_RIGHT:
+			/*case BUTTON_BLUE_RIGHT:
 				if(launchPadEvent.control.latchedState) {
 					Block.intake();
 				}
 				else 
-					
+					*/
 				
-				break;
+				
 				
 			case BUTTON_YELLOW:
 				if(launchPadEvent.control.latchedState) {
-					if(z % 2 == 1) {
-						Winch.WinchMotorUp();
-						z += 1;
-					}
-					else if(z % 2 == 0) {
-						Winch.WinchMotorDown();
-						z += 1;
-					}
+					//Devices.winchMotor.set(0.8);//TODO change this value or do the Switch Winch....
+					Devices.SRXEncoder.reset();
+					Devices.SRXEncoder2.reset();
 				}
-				else Winch.WinchMotorStop();
+				else
 
 				break;
 				
@@ -432,7 +439,7 @@ class Teleop
 					DoOtherThing();
 				break;
 			 */
-			case TRIGGER:
+			/*case TRIGGER:
 				if(button.latchedState) {
 					Block.WristOpen();
 				}
@@ -452,7 +459,7 @@ class Teleop
 				}
 				else {
 					
-				}
+				}*/
 			default:
 				break;
 			}

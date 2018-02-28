@@ -23,6 +23,8 @@ public class Devices
 	  
 	  public static WPI_TalonSRX winchMotor = new WPI_TalonSRX(7); //TODO Check assignment
 	  
+	 // public static WPI_TalonSRX winchSlacker = new WPI_TalonSRX(8); //TODO CHECK ASSIGNMENTS
+	  
 	  public static WPI_TalonSRX LeftCubeIntakeMotor = new WPI_TalonSRX(5); //TODO check assignments
 	  
 	  public static WPI_TalonSRX RightCubeIntakeMotor = new WPI_TalonSRX(6); //TODO check assignments
@@ -35,11 +37,12 @@ public class Devices
 
 	  public final static Compressor	compressor = new Compressor(0);	// Compressor class represents the PCM. There are 2.
 	  
-	  public final static ValveDA speedShifter = new ValveDA(0);
+	  public final static ValveDA speedShift= new ValveDA(0);
 	  
-	  public final static ValveDA gearOpen = new ValveDA(1);
-	  public final static ValveDA gearWrist = new ValveDA(2);
-	  
+	  public final static ValveDA gearOpen = new ValveDA(2);
+	 
+	  public final static ValveDA gearWrist = new ValveDA(4);
+	 
 	  public final static AnalogInput	pressureSensor = new AnalogInput(0);
 	  
 	  public final static PowerDistributionPanel	PDP = new PowerDistributionPanel();
@@ -51,6 +54,7 @@ public class Devices
 	  public final static Encoder	SRXEncoder = new Encoder(0, 1, true, EncodingType.k4X);
 	  public final static Encoder 	SRXEncoder2 = new Encoder(2, 3, true, EncodingType.k4X);
 	  public final static Encoder   WinchEncoder = new Encoder(4, 5, true, EncodingType.k4X);
+	  //public final static Encoder   WinchSlackerEncoder = new Encoder(6,7, true, EncodingType.k4X);
 	  // Create RobotDrive object for CAN Talon controllers.
 	  
 	  public static void InitializeCANTalonDrive()

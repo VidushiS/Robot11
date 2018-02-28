@@ -23,20 +23,20 @@ public class CubeIntake {
 	}
 	public void deposit() {
 		Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
-		Devices.RightCubeIntakeMotor.set(.5); //TODO test values
+		Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
 		
 		Devices.gearOpen.SetA();
-		Devices.gearWrist.SetB();
+		Devices.gearOpen.SetB();
 		Util.consoleLog("The cube is being deposited");
 		
 		isOut = true;
 	}
 	public void intake() {
 		Devices.LeftCubeIntakeMotor.set(-.5); //TODO test
-		Devices.RightCubeIntakeMotor.set(-.5);// TODO test
+		Devices.RightCubeIntakeMotor.set(.5);// TODO test
 		
 		Devices.gearOpen.SetB();
-		Devices.gearWrist.SetA();
+		Devices.gearOpen.SetA();
 		Util.consoleLog("The cube is being taken in to the robot");
 		
 		isOut = false;
@@ -62,14 +62,14 @@ public class CubeIntake {
 	}
 	public void MotorStartIntake() {
 		Devices.LeftCubeIntakeMotor.set(.5);
-		Devices.RightCubeIntakeMotor.set(.5);
+		Devices.RightCubeIntakeMotor.set(-.5);
 		
 		isIntaking = true;
 		isDepositing = false;
 	}
 	public void MotorStartDeposit() {
 		Devices.LeftCubeIntakeMotor.set(-.5);
-		Devices.RightCubeIntakeMotor.set(-.5);
+		Devices.RightCubeIntakeMotor.set(.5);
 		
 		isIntaking = false;
 		isDepositing = true;
@@ -83,6 +83,19 @@ public class CubeIntake {
 		Devices.gearOpen.SetB();
 		
 		isGrabberOpen = false;
+	}
+	
+	public boolean isGrabberOpen() {
+		return isGrabberOpen;
+	}
+	public boolean isIntaking() {
+		return isIntaking;
+	}
+	public boolean isDepositing() {
+		return isDepositing;
+	}
+	public boolean isOut() {
+		return isOut;
 	}
 	
 }

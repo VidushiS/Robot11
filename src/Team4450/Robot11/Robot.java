@@ -25,12 +25,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends SampleRobot 
 {
   static final String  	PROGRAM_NAME = "VS 2/7/2018 Version 1";
-
-  public boolean isTeleOpTrue;
+  
   
   public Properties		robotProperties;
   
-  public boolean		isClone = false, isComp = false;
+  public boolean		isClone = false, isComp = true;
     	
   DriverStation.Alliance	alliance;
   int                       location, matchNumber;
@@ -41,7 +40,7 @@ public class Robot extends SampleRobot
   CameraFeed			cameraThread;
   
   CubeIntake Block = new CubeIntake();
-      
+
   // Constructor.
   
   public Robot() //throws IOException
@@ -101,6 +100,9 @@ public class Robot extends SampleRobot
    		Devices.robotDrive.stopMotor();
    		Devices.robotDrive.setSafetyEnabled(false);
    		Devices.robotDrive.setExpiration(0.1);
+   		
+   		Devices.SRXEncoder.setReverseDirection(true);
+   		Devices.SRXEncoder2.setReverseDirection(true);
              
    		// Create NavX object here so it has time to calibrate before we
    		// use it. Takes 10 seconds. Must appear before CamerFeed is created.
@@ -141,21 +143,15 @@ public class Robot extends SampleRobot
 		  Util.consoleLog();
 
 		  LCD.printLine(1, "Mode: Disabled");
-
 		  // Reset driver station LEDs.
 
 		  SmartDashboard.putBoolean("Disabled", true);
 		  SmartDashboard.putBoolean("Auto Mode", false);
-		  SmartDashboard.putBoolean("Teleop Mode", isTeleOpTrue);
+		  SmartDashboard.putBoolean("Teleop Mode", false);
 		  SmartDashboard.putBoolean("FMS", Devices.ds.isFMSAttached());
 		  SmartDashboard.putBoolean("AutoTarget", false);
 		  SmartDashboard.putBoolean("TargetLocked", false);
 		  SmartDashboard.putBoolean("Overload", false);
-		  SmartDashboard.putNumber("AirPressure", Devices.compressor.getCompressorCurrent());
-		  SmartDashboard.putBoolean("Spit", Block.isDepositing);
-		  SmartDashboard.putBoolean("Intake", Block.isIntaking);
-		  SmartDashboard.putBoolean("Deployed", Block.isOut);
-		  SmartDashboard.putBoolean("Grabber", Block.isGrabberOpen);
 		  
 		  Util.consoleLog("end");
 	  }
@@ -175,8 +171,15 @@ public class Robot extends SampleRobot
             
     	  SmartDashboard.putBoolean("Disabled", false);
     	  SmartDashboard.putBoolean("Auto Mode", true);
+    	  SmartDashboard.putBoolean("TeleOp Mode", false);
+    	  SmartDashboard.putBoolean("Overload", false);
+    	  SmartDashboard.putNumber("AirPressure", Devices.compressor.getCompressorCurrent());
+		  SmartDashboard.putBoolean("Spit", Block.isDepositing);
+		  SmartDashboard.putBoolean("Intake", Block.isIntaking);
+		  SmartDashboard.putBoolean("Deployed", Block.isOut);
+		  SmartDashboard.putBoolean("Grabber", Block.isGrabberOpen);
         
-    	  isTeleOpTrue = false;
+  
     	  // Make available the alliance (red/blue) and staring position as
     	  // set on the driver station or FMS.
         
@@ -217,11 +220,19 @@ public class Robot extends SampleRobot
 
     	  LCD.clearAll();
       	  LCD.printLine(1, "Mode: Teleop");
+      	  LCD.printLine(2, "Winch Encoder", Devices.WinchEncoder.get());
+		  LCD.printLine(4, "Wheel Encoder (Left)", Devices.SRXEncoder);
+		  LCD.printLine(5, "Wheel Encoder (Right)", Devices.SRXEncoder2);
             
       	  SmartDashboard.putBoolean("Disabled", false);
       	  SmartDashboard.putBoolean("Teleop Mode", true);
-        
-      	isTeleOpTrue = true;
+      	  SmartDashboard.putBoolean("Auto Mode", false);
+      	  SmartDashboard.putNumber("AirPressure", Devices.compressor.getCompressorCurrent());
+		  SmartDashboard.putBoolean("Spit", Block.isDepositing);
+		  SmartDashboard.putBoolean("Intake", Block.isIntaking);
+		  SmartDashboard.putBoolean("Deployed", Block.isOut);
+		  SmartDashboard.putBoolean("Grabber", Block.isGrabberOpen);
+		  
       	  
       	  alliance = Devices.ds.getAlliance();
       	  location = Devices.ds.getLocation();

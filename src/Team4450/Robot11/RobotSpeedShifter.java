@@ -5,11 +5,11 @@ import Team4450.Lib.*;
 public class RobotSpeedShifter {
 	
 	public void slowSpeed() {
-		Devices.speedShifter.SetA();
+		Devices.speedShift.SetA();
 		Util.consoleLog("Slow Speed Mode enabled");
 	}
 	public void fastSpeed() {
-		Devices.speedShifter.SetB();
+		Devices.speedShift.SetB();
 		Util.consoleLog("Fast Speed Mode enabled");
 	}
 
