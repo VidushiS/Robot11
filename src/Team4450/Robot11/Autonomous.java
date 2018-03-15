@@ -76,11 +76,11 @@ public class Autonomous
 				break;
 			
 			case 2:
-				CenterAuto(false);//Auto Program which is used when starting from the center and we ARENT scoring
+				CenterAuto(false, false);//Auto Program which is used when starting from the center and we ARENT scoring
 				break;
 				
 			case 3:
-				CenterAuto(true);// Auto Program which is used when starting from the center and we are scoring
+				CenterAuto(true, false);// Auto Program which is used when starting from the center and we are scoring
 				break;
 				
 			case 4:
@@ -91,7 +91,9 @@ public class Autonomous
 				RightSide();// Auto Program which is used for the right side
 				break;
 				
-				
+			case 6:
+				CenterAuto(true, true);
+				break;
 		}
 		
 		Util.consoleLog("end");
@@ -174,14 +176,14 @@ public class Autonomous
 	double rotate = 0.45;//Used only for 90 degree turns. Power when turning.
 	int angled = 90;//Used only for 90 degree turns. Angle to turn to.
 	
-	int SwitchEncoderUp; //Used only for when the lift goes up when scoring on the switch
-	int SwitchEncoderDown; //Used only for when the lift goes down when scoring on the switch
+	public static int SwitchEncoderUp = 1700; //Used only for when the lift goes up when scoring on the switch
+	//Used only for when the lift goes down when scoring on the switch
 	//int ScaleEncoderUp; //Used only for when the lift goes up when scoring on the scale
 	//int ScaleEncoderDown; //Used only for when the lift goes down when scoring on the scale
 	
 	public void SideAutoStraight(){
 		//E1 2490; E2 1680 
-		autoDrive(-.50, 2490, true); //TODO test
+		autoDrive(-.50, 2490, true); 
 		//autoDrive(-.5, 1606, true);
 		Util.consoleLog("Driving forward to break the line from the sides");
 
@@ -198,8 +200,10 @@ public class Autonomous
 	}
 	
 	public boolean PosiRela(boolean Leftside){ 
-	boolean startPos = false; 
-	char firstLetter = robot.gameMessage.charAt(0);
+		
+	boolean startPos = false; //This boolean determines whether or not the robot is in line with the switch
+	char firstLetter = robot.gameMessage.charAt(0);//The first character of the FMS message
+	
 	if ((firstLetter == 'L' && Leftside == true) || (firstLetter == 'R' && Leftside == false)){
 	
 	startPos = true;//If the robot is in line, it is true
@@ -217,6 +221,7 @@ public class Autonomous
 	if (PosiRela(LeftSide)){
 		
 		autoDrive(-.50, 3180, true); 
+		winch.liftUp();
 		//autoDrive(-.5, 2050, true);
 				if(LeftSide){
 					autoRotate(-rotate, angled);
@@ -224,8 +229,10 @@ public class Autonomous
 				else if(!LeftSide){
 					autoRotate(rotate, angled);
 		autoDrive(-.30, 320, true);
+		Block.scoreSwitch();
+		winch.stopLift();
 		//autoDrive(-.3, 205, true);
-		//winch.WinchScoreSwitch(SwitchEncoderUp, SwitchEncoderDown); 
+		 
 	}
 	}
 	
@@ -247,7 +254,7 @@ public class Autonomous
 
 	}
 	
-	public void CenterAuto(boolean isScoring) { //The boolean is scoring checks if we are going to score a block or not
+	public void CenterAuto(boolean isScoring, boolean fast) { //The boolean is scoring checks if we are going to score a block or not
 		//E1 1970; E2 1250
 		//50 percent power maybe more cause more stuff will be added to the bot
 		char firstLetter = robot.gameMessage.charAt(0);
@@ -256,30 +263,51 @@ public class Autonomous
 			//autoDrive(-.3, 1270, true);
 		}
 		
-		else if(isScoring == true) {
+		else if(isScoring == true && fast == false) {
 			
 			//E1 924; E2 593 
-			autoDrive(-.5, 1200, true); //Make sure to test. Drive forward towards the center goal
+			autoDrive(-.5, 1200, true); 
+			winch.liftUp();
 			//autoDrive(-.5, 774, true);
 			if(firstLetter == 'L') {
-				autoRotate(rotate, angled);//Make sure to test. if the score plate on the switch is on the left turn that much
+				autoRotate(rotate, angled);
 			}
 			else if(firstLetter == 'R') {
-				autoRotate(-rotate, angled); //Make sure to test. if the score plate is on the right, then turn right
+				autoRotate(-rotate, angled); 
 			}
 			//E1 1028/ 1329; E2 670/ 857
-			autoDrive(-.5, 1330, true); //Make sure to test. Drive forward so that the sides of the robot align with the switch
+			autoDrive(-.5, 1330, true); 
 			//autoDrive(-.5, 858, true);
 			if(firstLetter == 'L') {
-				autoRotate(-rotate, angled);//Make sure to test. Turn towards the switch
+				autoRotate(-rotate, angled);
 			}
 			else if(firstLetter == 'R') {
-				autoRotate(rotate, angled);//Make sure to test. Turn towards the switch
-			}
+				autoRotate(rotate, angled);			
+				}
 			//E1 1118 ;E2 720
 			autoDrive(-.5, 1118, true);
+			Block.scoreSwitch();
+			winch.stopLift();
 			//autoDrive(-.5, 721, true);
-			//winch.WinchScoreSwitch(SwitchEncoderUp, SwitchEncoderDown);
+			
+		}
+		else if(isScoring == true && fast == true) {
+			autoDrive(-.40, 100, true);
+			winch.liftUp();
+			
+			if(firstLetter == 'L') {
+				autoRotate(.50, 24);
+				autoDrive(-.60, 2100, true);
+				Block.scoreSwitch();
+				winch.stopLift();
+			}
+			else if (firstLetter == 'R') {
+				autoRotate(-.50, 16);
+				autoDrive(-.60, 1900, true);
+				Block.scoreSwitch();
+				winch.stopLift();
+			}
+			
 		}
 	}
 	

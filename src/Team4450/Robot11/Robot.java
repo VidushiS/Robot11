@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the build.properties file.
  */
 
-public class Robot extends SampleRobot 
+@SuppressWarnings("deprecation")
+public class Robot extends SampleRobot
 {
   static final String  	PROGRAM_NAME = "VS 2/7/2018 Version 1";
   
@@ -34,12 +35,12 @@ public class Robot extends SampleRobot
   DriverStation.Alliance	alliance;
   int                       location, matchNumber;
   String					eventName, gameMessage;
-    
+  Robot robot;
   Thread               	monitorBatteryThread, monitorPDPThread;
   MonitorCompressor		monitorCompressorThread;
   CameraFeed			cameraThread;
   
-  CubeIntake Block = new CubeIntake();
+  CubeIntake Block = new CubeIntake(robot);
 
   // Constructor.
   
@@ -96,6 +97,10 @@ public class Robot extends SampleRobot
    		// Configure motor controllers and RobotDrive.
    		
    		Devices.InitializeCANTalonDrive();
+   		
+   		if (isComp) Devices.WinchEncoder.setReverseDirection(false);
+   		Devices.SRXEncoder.setReverseDirection(false);
+   		Devices.SRXEncoder2.setReverseDirection(false);
 		
    		Devices.robotDrive.stopMotor();
    		Devices.robotDrive.setSafetyEnabled(false);
@@ -232,6 +237,7 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("Intake", Block.isIntaking);
 		  SmartDashboard.putBoolean("Deployed", Block.isOut);
 		  SmartDashboard.putBoolean("Grabber", Block.isGrabberOpen);
+		  SmartDashboard.putBoolean("AutoGrab", Block.isIntakeDeposit());
 		  
       	  
       	  alliance = Devices.ds.getAlliance();

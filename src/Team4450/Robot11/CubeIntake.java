@@ -6,17 +6,27 @@ import Team4450.Lib.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class CubeIntake {
 
-	private Teleop teleop;
+	private Robot robot;
 	public boolean isOut;
 	public boolean isIntaking;
 	public boolean isDepositing;
 	public boolean isGrabberOpen;
-	public void PowerCubeManipulator(Devices devices, Teleop teleop) {
+	public boolean isIntakeDeposit;
+	public boolean isIntakeIntaking;
+	public boolean ISAUTOINTAKERUNNING;
+	private Thread AutoIntakeThread;
+	
+	public CubeIntake(Robot robot) {
 		Util.consoleLog();
-		this.teleop = teleop;
+		this.robot = robot;
+		
+		if (robot.isAutonomous()) {
+			WristIn();
+			WristOpen();
+		}
 		
 	}
-	public void Dispose() {
+	public void dispose() {
 		Util.consoleLog();
 		if(Devices.LeftCubeIntakeMotor != null) Devices.LeftCubeIntakeMotor.free();
 		if(Devices.RightCubeIntakeMotor != null) Devices.RightCubeIntakeMotor.free();
@@ -25,21 +35,23 @@ public class CubeIntake {
 		Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
 		Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
 		
-		Devices.gearOpen.SetA();
 		Devices.gearOpen.SetB();
-		Util.consoleLog("The cube is being deposited");
+		Devices.gearOpen.SetA();
 		
-		isOut = true;
+		
+		isIntakeDeposit = true;
+		isIntakeIntaking = false;
 	}
 	public void intake() {
 		Devices.LeftCubeIntakeMotor.set(-.5); //TODO test
 		Devices.RightCubeIntakeMotor.set(.5);// TODO test
 		
-		Devices.gearOpen.SetB();
 		Devices.gearOpen.SetA();
+		Devices.gearOpen.SetB();
 		Util.consoleLog("The cube is being taken in to the robot");
 		
-		isOut = false;
+		isIntakeDeposit = false;
+		isIntakeIntaking = true;
 	}
 	
 	public void stopCubeIntake(){
@@ -85,6 +97,12 @@ public class CubeIntake {
 		isGrabberOpen = false;
 	}
 	
+	public void scoreSwitch() {
+		deposit();
+		stopCubeIntake();
+		WristIn();
+	}
+	
 	public boolean isGrabberOpen() {
 		return isGrabberOpen;
 	}
@@ -97,5 +115,66 @@ public class CubeIntake {
 	public boolean isOut() {
 		return isOut;
 	}
+	public boolean isIntakeDeposit() {
+		return isIntakeDeposit();
+	}
+	public boolean isIntakeIntaking() {
+		return isIntakeIntaking;
+	}
+	
+	public void AutoIntakeStart() {
+		
+		if (AutoIntakeThread != null) return;
+		AutoIntakeThread = new AutoIntake();
+		AutoIntakeThread.start();
+		ISAUTOINTAKERUNNING = true;
+	}
+	public void AutoIntakeStop() {
+		if (AutoIntakeThread != null) {
+			AutoIntakeThread.interrupt();
+		}
+		AutoIntakeThread = null;
+		ISAUTOINTAKERUNNING = false;
+	}
+	
+	private class AutoIntake extends Thread{
+		
+		AutoIntake(){
+			this.setName("AutoIntake");	
+		}
+		public void run(){
+			double currentLimit;
+			
+			if(robot.isComp) {
+				currentLimit = 15.0;
+			}
+			else currentLimit = 20.0;
+			
+			
+			try 
+			{
+				Devices.gearOpen.SetA();
+				Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
+				Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
+			
+			while(!isInterrupted() && Devices.LeftCubeIntakeMotor.getOutputCurrent() < currentLimit) {
+				LCD.printLine(9, "cube motor current=%f", Devices.LeftCubeIntakeMotor.getOutputCurrent());
+	            sleep(50);
+			}
+			if(!interrupted()) {
+				Util.consoleLog(" Cube detected");
+				sleep(500);
+			}
+			}
+			catch (InterruptedException e) {
+				stopCubeIntake();
+			}
+			catch (Throwable e) { e.printStackTrace(Util.logPrintStream); }
+			finally {stopCubeIntake();}
+			
+			AutoIntakeThread = null;
+		}
+	}
+	
 	
 }

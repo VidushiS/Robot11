@@ -19,6 +19,7 @@ class Teleop
 	private RobotSpeedShifter   speedShifter;
 	private CubeIntake          Block;
 	private WinchToogle			Winch;
+	public boolean				winchClimber = true;
 	
 
 	// Constructor.
@@ -28,7 +29,8 @@ class Teleop
 		Util.consoleLog();
 
 		this.robot = robot;
-
+		Block = new CubeIntake(robot);
+		
 		vision = Vision.getInstance(robot);
 	}
 
@@ -48,7 +50,7 @@ class Teleop
 	void OperatorControl()
 	{
 		double	rightY = 0, leftY = 0, utilX = 0, rightX = 0, leftX = 0, utilY = 0;
-		double	gain = .01;
+		double	gain = .05;
 		boolean steeringAssistMode = false;
 		int		angle;
 		int WinchEncoderCounts = 980; //TODO check the encoder counts to make sure it works
@@ -56,6 +58,7 @@ class Teleop
 			
 		// Motor safety turned off during initialization.
 		Devices.robotDrive.setSafetyEnabled(false);
+		Devices.SetCANTalonBrakeMode(false);
 
 		Util.consoleLog();
 
@@ -92,6 +95,8 @@ class Teleop
 		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
 		//Example on how to track button:
 		//utilityStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_BACK);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
 		utilityStick.addJoyStickEventListener(new UtilityStickListener());
 		utilityStick.Start();
 
@@ -186,13 +191,9 @@ class Teleop
 					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 			}
 			
-			/*if(Math.abs(Devices.WinchEncoder.get())<= WinchEncoderCounts) {
-				Devices.winchMotor.set(utilY);	
-			}
-			else if (Math.abs(Devices.WinchEncoder.get())> WinchEncoderCounts) {
-				Devices.winchMotor.set(0);
-			}
-			*/
+				//Winch.WinchMotorTeleOp(utilY);
+				
+			
 			// Update the robot heading indicator on the DS.
 
 			SmartDashboard.putNumber("Gyro", Devices.navx.getHeading());
@@ -248,9 +249,7 @@ class Teleop
 		public void ButtonDown(LaunchPadEvent launchPadEvent) 
 		{
 			LaunchPadControl	control = launchPadEvent.control;
-			int x = 3;
-			int y = 3;
-			int z = 3;
+			
 			Util.consoleLog("%s, latchedState=%b", control.id.name(),  control.latchedState);
 
 			switch(control.id)
@@ -264,20 +263,16 @@ class Teleop
 					DoOtherThing();
 				break;
 			*/
-		/*	case BUTTON_BLUE:
-				if (launchPadEvent.control.latchedState && !Block.isDepositing())
-					Block.deposit();
-				else
-					Block.intake();
+			case BUTTON_BLUE:
+				Winch.deployForks();
 				break;
 				
 			case BUTTON_RED_RIGHT:
-				if (launchPadEvent.control.latchedState && !Block.isOut())
+				if (launchPadEvent.control.latchedState)
 					Block.WristIn();
 				else
 					Block.WristOut();;
 				break;
-			*/
 			case BUTTON_RED:
 				if (launchPadEvent.control.latchedState)
 					speedShifter.slowSpeed();
@@ -286,31 +281,21 @@ class Teleop
 				break;
 				
 			/*case BUTTON_BLUE_RIGHT:
-				if(launchPadEvent.control.latchedState) {
-					Block.intake();
-				}
-				else 
-					*/
-				
-				
-				
+				if (Block.ISAUTOINTAKERUNNING)
+					Block.AutoIntakeStop();
+				else
+					Block.AutoIntakeStart();
+				break;*/
+					
 			case BUTTON_YELLOW:
-				if(launchPadEvent.control.latchedState) {
+				
 					//Devices.winchMotor.set(0.8);//TODO change this value or do the Switch Winch....
 					Devices.SRXEncoder.reset();
 					Devices.SRXEncoder2.reset();
-				}
-				else
-
 				break;
-				
-			case ROCKER_LEFT_FRONT:
-				if (robot.cameraThread != null)robot.cameraThread.ChangeCamera();
-				
-			break;
 			
 			case ROCKER_RIGHT:
-				if (robot.cameraThread != null)robot.cameraThread.ChangeCamera();
+				if (control.latchedState)robot.cameraThread.ChangeCamera();
 			default:
 				break;
 			}
@@ -339,8 +324,18 @@ class Teleop
 				break;
 			*/
 			case ROCKER_LEFT_FRONT:
+				if (robot.cameraThread != null)robot.cameraThread.ChangeCamera();
 				
-				//invertDrive = !invertDrive;
+			break;
+			case ROCKER_RIGHT:
+					Devices.WinchEncoder.reset();
+				break;
+			case ROCKER_LEFT_BACK: 
+				if (Devices.isBrakeMode())
+					Devices.SetCANTalonBrakeMode(false);	// coast
+				else
+					Devices.SetCANTalonBrakeMode(true);		// brake
+				
 				break;
 				
 			default:
@@ -365,7 +360,7 @@ class Teleop
 			case TRIGGER:
 				altDriveMode = !altDriveMode;
 				break;
-				
+			
 			//Example of Joystick Button case:
 			/*
 			case BUTTON_NAME_HERE:
@@ -407,6 +402,13 @@ class Teleop
 					DoOtherThing();
 				break;
 			 */
+			case TRIGGER:
+				if (speedShifter.isSlow)
+    				speedShifter.slowSpeed();
+    			else
+    				speedShifter.fastSpeed();
+
+				break;
 			default:
 				break;
 			}
@@ -439,7 +441,7 @@ class Teleop
 					DoOtherThing();
 				break;
 			 */
-			/*case TRIGGER:
+			case TRIGGER:
 				if(button.latchedState) {
 					Block.WristOpen();
 				}
@@ -451,15 +453,15 @@ class Teleop
 					Block.MotorStartIntake();
 				}
 				else{
-					
+					Block.stopCubeIntake();
 				}
 			case TOP_BACK:
 				if(button.latchedState) {
 					Block.MotorStartDeposit();
 				}
 				else {
-					
-				}*/
+					Block.stopCubeIntake();
+				}
 			default:
 				break;
 			}

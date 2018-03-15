@@ -14,22 +14,29 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Devices
 {
 	  // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
 	  private static WPI_TalonSRX	LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon;// LSlaveCanTalon, RSlaveCanTalon;
 	  
-	  public static WPI_TalonSRX winchMotor = new WPI_TalonSRX(7); //TODO Check assignment
-	  
+	  public final static Talon winchMotor = new Talon(0); //TODO Check assignment
+
 	 // public static WPI_TalonSRX winchSlacker = new WPI_TalonSRX(8); //TODO CHECK ASSIGNMENTS
 	  
 	  public static WPI_TalonSRX LeftCubeIntakeMotor = new WPI_TalonSRX(5); //TODO check assignments
 	  
+	  public static DigitalInput		winchLimitSwitch = new DigitalInput(6);
+	  
 	  public static WPI_TalonSRX RightCubeIntakeMotor = new WPI_TalonSRX(6); //TODO check assignments
 	  public static DifferentialDrive	robotDrive;
 
+	  public static Servo				forkliftServo = new Servo(2);
+	  public static Servo				footServo = new Servo(3);
 	  public final static Joystick      utilityStick = new Joystick(2);	
 	  public final static Joystick      leftStick = new Joystick(0);	
 	  public final static Joystick		rightStick = new Joystick(1);	
@@ -43,6 +50,9 @@ public class Devices
 	 
 	  public final static ValveDA gearWrist = new ValveDA(4);
 	 
+	 // public final static Servo		liftServoRight = new Servo(1);//TODO Make sure to check the port assignments
+	  //public final static Servo		liftServoLeft = new Servo(0);//TODO Make sure to check the port assignments
+	  
 	  public final static AnalogInput	pressureSensor = new AnalogInput(0);
 	  
 	  public final static PowerDistributionPanel	PDP = new PowerDistributionPanel();
@@ -50,6 +60,8 @@ public class Devices
 	  public final static DriverStation				ds = DriverStation.getInstance();
 
 	  public static NavX				navx;
+	  
+	  private static boolean BreakMode;
 	  
 	  public final static Encoder	SRXEncoder = new Encoder(0, 1, true, EncodingType.k4X);
 	  public final static Encoder 	SRXEncoder2 = new Encoder(2, 3, true, EncodingType.k4X);
@@ -73,8 +85,6 @@ public class Devices
 	      InitializeCANTalon(RFCanTalon);
 	      InitializeCANTalon(RRCanTalon);
 	   
-	      InitializeCANTalon(winchMotor);
-	      	winchMotor.setNeutralMode(NeutralMode.Brake);
 	      // Configure CAN Talons with correct inversions.
 	      LFCanTalon.setInverted(false);
 		  LRCanTalon.setInverted(false);
@@ -82,7 +92,7 @@ public class Devices
 		  RFCanTalon.setInverted(false);
 		  RRCanTalon.setInverted(false);
 	
-	      
+	      BreakMode = false;
 	      // Turn on brake mode for CAN Talons.
 	      SetCANTalonBrakeMode(true);
 	      
@@ -105,6 +115,7 @@ public class Devices
 		  //talon.changeControlMode(ControlMode.PercentOutput); //TODO Find PercentVbus
 	  }
 	  
+
 	  // Set neutral behavior of CAN Talons. True = brake mode, false = coast mode.
 
 	  public static void SetCANTalonBrakeMode(boolean brakeMode)
@@ -122,8 +133,13 @@ public class Devices
 		  LRCanTalon.setNeutralMode(newMode);
 		  RFCanTalon.setNeutralMode(newMode);
 		  RRCanTalon.setNeutralMode(newMode);
+		  
+		  BreakMode = brakeMode;
 		//  LSlaveCanTalon.setNeutralMode(newMode);
 		//  RSlaveCanTalon.setNeutralMode(newMode);
+	  }
+	  public static boolean isBrakeMode() {
+		return BreakMode;  
 	  }
 	  
 	  // Set CAN Talon voltage ramp rate. Rate is volts/sec and can be 2-12v.
