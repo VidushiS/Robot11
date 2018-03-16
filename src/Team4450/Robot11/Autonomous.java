@@ -221,7 +221,7 @@ public class Autonomous
 	if (PosiRela(LeftSide)){
 		
 		autoDrive(-.50, 3180, true); 
-		winch.liftUp();
+	//	winch.liftUp();
 		//autoDrive(-.5, 2050, true);
 				if(LeftSide){
 					autoRotate(-rotate, angled);
@@ -229,8 +229,8 @@ public class Autonomous
 				else if(!LeftSide){
 					autoRotate(rotate, angled);
 		autoDrive(-.30, 320, true);
-		Block.scoreSwitch();
-		winch.stopLift();
+		//Block.scoreSwitch();
+		//winch.stopLift();
 		//autoDrive(-.3, 205, true);
 		 
 	}
@@ -267,7 +267,7 @@ public class Autonomous
 			
 			//E1 924; E2 593 
 			autoDrive(-.5, 1200, true); 
-			winch.liftUp();
+			//winch.liftUp();
 			//autoDrive(-.5, 774, true);
 			if(firstLetter == 'L') {
 				autoRotate(rotate, angled);
@@ -286,26 +286,26 @@ public class Autonomous
 				}
 			//E1 1118 ;E2 720
 			autoDrive(-.5, 1118, true);
-			Block.scoreSwitch();
-			winch.stopLift();
+		//	Block.scoreSwitch();
+			//winch.stopLift();
 			//autoDrive(-.5, 721, true);
 			
 		}
 		else if(isScoring == true && fast == true) {
 			autoDrive(-.40, 100, true);
-			winch.liftUp();
+			//winch.liftUp();
 			
 			if(firstLetter == 'L') {
 				autoRotate(.50, 24);
 				autoDrive(-.60, 2100, true);
-				Block.scoreSwitch();
-				winch.stopLift();
+		//		Block.scoreSwitch();
+			//	winch.stopLift();
 			}
 			else if (firstLetter == 'R') {
 				autoRotate(-.50, 16);
 				autoDrive(-.60, 1900, true);
-				Block.scoreSwitch();
-				winch.stopLift();
+			//	Block.scoreSwitch();
+			//	winch.stopLift();
 			}
 			
 		}

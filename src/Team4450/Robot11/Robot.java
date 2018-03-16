@@ -30,7 +30,7 @@ public class Robot extends SampleRobot
   
   public Properties		robotProperties;
   
-  public boolean		isClone = false, isComp = true;
+  public boolean		isClone = false, isComp = false;
     	
   DriverStation.Alliance	alliance;
   int                       location, matchNumber;
@@ -39,8 +39,6 @@ public class Robot extends SampleRobot
   Thread               	monitorBatteryThread, monitorPDPThread;
   MonitorCompressor		monitorCompressorThread;
   CameraFeed			cameraThread;
-  
-  CubeIntake Block = new CubeIntake(robot);
 
   // Constructor.
   
@@ -176,14 +174,6 @@ public class Robot extends SampleRobot
             
     	  SmartDashboard.putBoolean("Disabled", false);
     	  SmartDashboard.putBoolean("Auto Mode", true);
-    	  SmartDashboard.putBoolean("TeleOp Mode", false);
-    	  SmartDashboard.putBoolean("Overload", false);
-    	  SmartDashboard.putNumber("AirPressure", Devices.compressor.getCompressorCurrent());
-		  SmartDashboard.putBoolean("Spit", Block.isDepositing);
-		  SmartDashboard.putBoolean("Intake", Block.isIntaking);
-		  SmartDashboard.putBoolean("Deployed", Block.isOut);
-		  SmartDashboard.putBoolean("Grabber", Block.isGrabberOpen);
-        
   
     	  // Make available the alliance (red/blue) and staring position as
     	  // set on the driver station or FMS.
@@ -225,20 +215,9 @@ public class Robot extends SampleRobot
 
     	  LCD.clearAll();
       	  LCD.printLine(1, "Mode: Teleop");
-      	  LCD.printLine(2, "Winch Encoder", Devices.WinchEncoder.get());
-		  LCD.printLine(4, "Wheel Encoder (Left)", Devices.SRXEncoder);
-		  LCD.printLine(5, "Wheel Encoder (Right)", Devices.SRXEncoder2);
             
       	  SmartDashboard.putBoolean("Disabled", false);
-      	  SmartDashboard.putBoolean("Teleop Mode", true);
-      	  SmartDashboard.putBoolean("Auto Mode", false);
-      	  SmartDashboard.putNumber("AirPressure", Devices.compressor.getCompressorCurrent());
-		  SmartDashboard.putBoolean("Spit", Block.isDepositing);
-		  SmartDashboard.putBoolean("Intake", Block.isIntaking);
-		  SmartDashboard.putBoolean("Deployed", Block.isOut);
-		  SmartDashboard.putBoolean("Grabber", Block.isGrabberOpen);
-		  SmartDashboard.putBoolean("AutoGrab", Block.isIntakeDeposit());
-		  
+      	  SmartDashboard.putBoolean("Teleop Mode", true);		  
       	  
       	  alliance = Devices.ds.getAlliance();
       	  location = Devices.ds.getLocation();
@@ -258,9 +237,8 @@ public class Robot extends SampleRobot
           Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
         
           // Start operator control process contained in the Teleop class.
-        
+     
           Teleop teleOp = new Teleop(this);
-       
           teleOp.OperatorControl();
         
           teleOp.dispose();

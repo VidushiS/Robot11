@@ -7,13 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class CubeIntake {
 
 	private Robot robot;
-	public boolean isOut;
-	public boolean isIntaking;
-	public boolean isDepositing;
-	public boolean isGrabberOpen;
-	public boolean isIntakeDeposit;
-	public boolean isIntakeIntaking;
-	public boolean ISAUTOINTAKERUNNING;
+	public boolean isOut, isIntaking, isDepositing, isGrabberOpen, isIntakeDeposit, isIntakeIntaking, ISAUTOINTAKERUNNING;
 	private Thread AutoIntakeThread;
 	
 	public CubeIntake(Robot robot) {
@@ -97,12 +91,6 @@ public class CubeIntake {
 		isGrabberOpen = false;
 	}
 	
-	public void scoreSwitch() {
-		deposit();
-		stopCubeIntake();
-		WristIn();
-	}
-	
 	public boolean isGrabberOpen() {
 		return isGrabberOpen;
 	}
@@ -116,7 +104,7 @@ public class CubeIntake {
 		return isOut;
 	}
 	public boolean isIntakeDeposit() {
-		return isIntakeDeposit();
+		return isIntakeDeposit;
 	}
 	public boolean isIntakeIntaking() {
 		return isIntakeIntaking;

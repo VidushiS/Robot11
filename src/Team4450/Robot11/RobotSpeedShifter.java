@@ -6,6 +6,8 @@ public class RobotSpeedShifter {
 	public boolean isSlow;
 	public Robot robot;
 	public RobotSpeedShifter(Robot robot) {
+		Util.consoleLog();
+		this.robot = robot;
 		
 	}
 	public void slowSpeed() {

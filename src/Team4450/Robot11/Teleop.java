@@ -19,7 +19,6 @@ class Teleop
 	private RobotSpeedShifter   speedShifter;
 	private CubeIntake          Block;
 	private WinchToogle			Winch;
-	public boolean				winchClimber = true;
 	
 
 	// Constructor.
@@ -29,7 +28,9 @@ class Teleop
 		Util.consoleLog();
 
 		this.robot = robot;
+		Winch = new WinchToogle(robot);
 		Block = new CubeIntake(robot);
+		speedShifter = new RobotSpeedShifter(robot);
 		
 		vision = Vision.getInstance(robot);
 	}
@@ -38,7 +39,7 @@ class Teleop
 
 	void dispose()
 	{
-		Util.consoleLog();
+		Util.consoleLog("We have disposed the teleop");
 
 		if (leftStick != null) leftStick.dispose();
 		if (rightStick != null) rightStick.dispose();
@@ -53,13 +54,10 @@ class Teleop
 		double	gain = .05;
 		boolean steeringAssistMode = false;
 		int		angle;
-		int WinchEncoderCounts = 980; //TODO check the encoder counts to make sure it works
-		int WinchSlackerEncoderCounts = 240; //TODO check the encoder counts to make sure it works
-			
+					
 		// Motor safety turned off during initialization.
 		Devices.robotDrive.setSafetyEnabled(false);
 		Devices.SetCANTalonBrakeMode(false);
-
 		Util.consoleLog();
 
 		LCD.printLine(1, "Mode: OperatorControl");
@@ -74,21 +72,27 @@ class Teleop
 
 		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_FRONT);
 		lpControl.controlType = LaunchPadControlTypes.SWITCH;
-
 		//Example on how to track button:
 		//launchPad.AddControl(LaunchPadControlIDs.BUTTON_COLOR_HERE);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED_RIGHT);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
+		launchPad.AddControl(LaunchPadControlIDs.ROCKER_RIGHT);
+		launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
 		launchPad.addLaunchPadEventListener(new LaunchPadListener());
 		launchPad.Start();
 
 		leftStick = new JoyStick(Devices.leftStick, "LeftStick", JoyStickButtonIDs.TRIGGER, this);
 		//Example on how to track button:
 		//leftStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
+		leftStick.AddButton(JoyStickButtonIDs.TRIGGER);
 		leftStick.addJoyStickEventListener(new LeftStickListener());
 		leftStick.Start();
 
 		rightStick = new JoyStick(Devices.rightStick, "RightStick", JoyStickButtonIDs.TRIGGER, this);
 		//Example on how to track button:
 		//rightStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
+		rightStick.AddButton(JoyStickButtonIDs.TRIGGER);
 		rightStick.addJoyStickEventListener(new RightStickListener());
 		rightStick.Start();
 
@@ -147,7 +151,7 @@ class Teleop
 			//if (!autoTarget) robot.robotDrive.tankDrive(leftY, rightY);
 
 			// Two drive modes, full tank and alternate. Switch on right stick trigger.
-
+			
 			if (!autoTarget) 
 			{
 				if (altDriveMode)
@@ -191,7 +195,7 @@ class Teleop
 					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 			}
 			
-				//Winch.WinchMotorTeleOp(utilY);
+				Winch.WinchMotorTeleOp(utilY);
 				
 			
 			// Update the robot heading indicator on the DS.
@@ -268,16 +272,12 @@ class Teleop
 				break;
 				
 			case BUTTON_RED_RIGHT:
-				if (launchPadEvent.control.latchedState)
+				if (!Block.isOut())
 					Block.WristIn();
 				else
-					Block.WristOut();;
+					Block.WristOut();
 				break;
 			case BUTTON_RED:
-				if (launchPadEvent.control.latchedState)
-					speedShifter.slowSpeed();
-				else
-					speedShifter.fastSpeed();
 				break;
 				
 			/*case BUTTON_BLUE_RIGHT:
@@ -294,8 +294,6 @@ class Teleop
 					Devices.SRXEncoder2.reset();
 				break;
 			
-			case ROCKER_RIGHT:
-				if (control.latchedState)robot.cameraThread.ChangeCamera();
 			default:
 				break;
 			}
@@ -328,7 +326,7 @@ class Teleop
 				
 			break;
 			case ROCKER_RIGHT:
-					Devices.WinchEncoder.reset();
+				if (control.latchedState)robot.cameraThread.ChangeCamera();
 				break;
 			case ROCKER_LEFT_BACK: 
 				if (Devices.isBrakeMode())
@@ -403,7 +401,7 @@ class Teleop
 				break;
 			 */
 			case TRIGGER:
-				if (speedShifter.isSlow)
+				if (button.latchedState)
     				speedShifter.slowSpeed();
     			else
     				speedShifter.fastSpeed();

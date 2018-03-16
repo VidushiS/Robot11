@@ -85,6 +85,11 @@ public class Devices
 	      InitializeCANTalon(RFCanTalon);
 	      InitializeCANTalon(RRCanTalon);
 	   
+	      InitializeCANTalon(LeftCubeIntakeMotor);
+	      LeftCubeIntakeMotor.setNeutralMode(NeutralMode.Brake);
+	      InitializeCANTalon(RightCubeIntakeMotor);
+	      RightCubeIntakeMotor.setNeutralMode(NeutralMode.Brake);
+	      
 	      // Configure CAN Talons with correct inversions.
 	      LFCanTalon.setInverted(false);
 		  LRCanTalon.setInverted(false);
@@ -144,20 +149,18 @@ public class Devices
 	  
 	  // Set CAN Talon voltage ramp rate. Rate is volts/sec and can be 2-12v.
 	  
-	  /*
-	   * As of right now I'm unable to find a replacement function.
-	  public static void SetCANTalonRampRate(double rate)
+	  
+	  
+	  public static void SetCANTalonRampRate(double seconds)
 	  {
-		  Util.consoleLog("%f", rate);
+		  Util.consoleLog("%f", seconds);
 		  
-		  LFCanTalon.setVoltageRampRate(rate);
-		  LRCanTalon.setVoltageRampRate(rate);
-		  RFCanTalon.setVoltageRampRate(rate);
-		  RRCanTalon.setVoltageRampRate(rate);
-		  LSlaveCanTalon.setVoltageRampRate(rate);
-		  RSlaveCanTalon.setVoltageRampRate(rate);
+		  LFCanTalon.configOpenloopRamp(seconds, 0);
+		  LRCanTalon.configOpenloopRamp(seconds, 0);
+		  RFCanTalon.configOpenloopRamp(seconds, 0);
+		  RRCanTalon.configOpenloopRamp(seconds, 0);
 	  }
-	  */
+	  
 	  
 	  // Return voltage and current draw for each CAN Talon.
 	  
@@ -168,8 +171,7 @@ public class Devices
 				  LRCanTalon.getMotorOutputVoltage(), LRCanTalon.getOutputCurrent(),
 				  RFCanTalon.getMotorOutputVoltage(), RFCanTalon.getOutputCurrent(),
 				  RRCanTalon.getMotorOutputVoltage(), RRCanTalon.getOutputCurrent());
-				//  LSlaveCanTalon.getMotorOutputVoltage(), LSlaveCanTalon.getOutputCurrent(),
-				//  RSlaveCanTalon.getMotorOutputVoltage(), RSlaveCanTalon.getOutputCurrent());
+			
 	  }
 
 }
