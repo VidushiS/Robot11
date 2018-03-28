@@ -3,6 +3,9 @@ package Team4450.Robot11;
 
 
 import Team4450.Lib.*;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class CubeIntake {
 
@@ -18,6 +21,13 @@ public class CubeIntake {
 			WristIn();
 			WristOpen();
 		}
+		if(robot.isOperatorControl()) {
+			SmartDashboard.putBoolean("Intake", isIntaking());
+			SmartDashboard.putBoolean("Gear Wrist Out", isOut());
+			SmartDashboard.putBoolean("Gear Wrist Open", isGrabberOpen());
+			
+		}
+		
 		
 	}
 	public void dispose() {
@@ -26,22 +36,24 @@ public class CubeIntake {
 		if(Devices.RightCubeIntakeMotor != null) Devices.RightCubeIntakeMotor.free();
 	}
 	public void deposit() {
+		WristOpen();
 		Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
 		Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
 		
-		Devices.gearOpen.SetB();
-		Devices.gearOpen.SetA();
+		
+		WristClose();
 		
 		
 		isIntakeDeposit = true;
 		isIntakeIntaking = false;
 	}
 	public void intake() {
+		WristClose();
+		
 		Devices.LeftCubeIntakeMotor.set(-.5); //TODO test
 		Devices.RightCubeIntakeMotor.set(.5);// TODO test
 		
-		Devices.gearOpen.SetA();
-		Devices.gearOpen.SetB();
+		WristOpen();
 		Util.consoleLog("The cube is being taken in to the robot");
 		
 		isIntakeDeposit = false;
@@ -55,38 +67,57 @@ public class CubeIntake {
 		Devices.RightCubeIntakeMotor.set(0);
 		
 	}
-	
 	public void WristIn() {
-		Devices.gearWrist.SetA();
+		if(robot.isClone) {
+			Devices.gearWrist.SetA();
+		}
+		else {
+			Devices.gearWrist.SetB();
+		}
 		
 		isOut = false;
 	}
 	public void WristOut() {
-		Devices.gearWrist.SetB();
+		if(robot.isClone) {
+			Devices.gearWrist.SetB();
+		}
+		else {
+			Devices.gearWrist.SetA();
+		}
 		
 		isOut = true;
 	}
 	public void MotorStartIntake() {
-		Devices.LeftCubeIntakeMotor.set(.5);
+		Devices.LeftCubeIntakeMotor.set(-.5);
 		Devices.RightCubeIntakeMotor.set(-.5);
 		
 		isIntaking = true;
 		isDepositing = false;
 	}
 	public void MotorStartDeposit() {
-		Devices.LeftCubeIntakeMotor.set(-.5);
+		Devices.LeftCubeIntakeMotor.set(.5);
 		Devices.RightCubeIntakeMotor.set(.5);
 		
 		isIntaking = false;
 		isDepositing = true;
 	}
 	public void WristOpen() {
+		if(robot.isClone) {
 		Devices.gearOpen.SetA();
-		
+		}
+		else {
+			Devices.gearOpen.SetB();
+		}
 		isGrabberOpen = true;
 	}
 	public void WristClose() {
-		Devices.gearOpen.SetB();
+		if(robot.isClone) {
+			Devices.gearOpen.SetB();	
+		}
+		else{
+			Devices.gearOpen.SetA();
+			}
+		
 		
 		isGrabberOpen = false;
 	}
@@ -141,10 +172,9 @@ public class CubeIntake {
 			
 			try 
 			{
-				Devices.gearOpen.SetA();
 				Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
 				Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
-			
+				
 			while(!isInterrupted() && Devices.LeftCubeIntakeMotor.getOutputCurrent() < currentLimit) {
 				LCD.printLine(9, "cube motor current=%f", Devices.LeftCubeIntakeMotor.getOutputCurrent());
 	            sleep(50);

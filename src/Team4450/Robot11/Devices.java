@@ -96,6 +96,7 @@ public class Devices
 		  
 		  RFCanTalon.setInverted(false);
 		  RRCanTalon.setInverted(false);
+		 
 	
 	      BreakMode = false;
 	      // Turn on brake mode for CAN Talons.

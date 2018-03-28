@@ -96,7 +96,15 @@ public class Robot extends SampleRobot
    		
    		Devices.InitializeCANTalonDrive();
    		
-   		if (isComp) Devices.WinchEncoder.setReverseDirection(false);
+   		if (isComp) {
+   			Devices.WinchEncoder.setReverseDirection(false);
+   			Devices.winchMotor.setInverted(true);
+   		}
+   		else {
+   			Devices.WinchEncoder.setReverseDirection(true);
+   			Devices.winchMotor.setInverted(false);
+   		}
+   		
    		Devices.SRXEncoder.setReverseDirection(false);
    		Devices.SRXEncoder2.setReverseDirection(false);
 		
@@ -116,7 +124,7 @@ public class Robot extends SampleRobot
 
    		// Start the battery, compressor, PDP and camera feed monitoring Tasks.
 
-   		monitorBatteryThread = MonitorBattery.getInstance(m_ds);//DOUBLE CHECK IF THIS IS CORRECT!!!!!!!!!!!!!!!!!!!!!!!!!!s
+   		monitorBatteryThread = MonitorBattery.getInstance();
    		monitorBatteryThread.start();
 
    		monitorCompressorThread = MonitorCompressor.getInstance(Devices.pressureSensor);

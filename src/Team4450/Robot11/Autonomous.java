@@ -20,6 +20,7 @@ public class Autonomous
 	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
 	private CubeIntake Block;
 	private WinchToogle winch;
+	private RobotSpeedShifter robotSpeedShifter;
 	
 	
 
@@ -28,7 +29,11 @@ public class Autonomous
 		Util.consoleLog();
 		
 		this.robot = robot;	
+		winch = new WinchToogle(robot);
+		Block = new CubeIntake(robot);
+		robotSpeedShifter = new RobotSpeedShifter(robot);
 		
+		robotSpeedShifter.slowSpeed();
 		
 	}
 
@@ -84,15 +89,23 @@ public class Autonomous
 				break;
 				
 			case 4:
-				LeftSide(); // Auto Program which is used for the left side
+				LeftSide(false); // Auto Program which is used for the left side
 				break;
 				
 			case 5:
-				RightSide();// Auto Program which is used for the right side
+				RightSide(false);// Auto Program which is used for the right side
 				break;
 				
 			case 6:
-				CenterAuto(true, true);
+				CenterAuto(true, true); //
+				break;
+			
+			case 7:
+				RightSide(true); //Two cube auto for the right side
+				break;
+				
+			case 8:
+				LeftSide(true); //Two cube auto for the left side
 				break;
 		}
 		
@@ -175,6 +188,7 @@ public class Autonomous
 	
 	double rotate = 0.45;//Used only for 90 degree turns. Power when turning.
 	int angled = 90;//Used only for 90 degree turns. Angle to turn to.
+	int switchEncoder = 4000;
 	
 	public static int SwitchEncoderUp = 1700; //Used only for when the lift goes up when scoring on the switch
 	//Used only for when the lift goes down when scoring on the switch
@@ -190,13 +204,13 @@ public class Autonomous
 	}
 	
 	//This method is used to direct the actions the robot should take from the left side. Follow the methods and the parameters to understand
-	public void LeftSide(){ 
-		SideAutonomous(true);
+	public void LeftSide(boolean twoCube){ 
+		SideAutonomous(true, twoCube);
 	}
 	
 	//This method is used to direct the actions the robot should take from the right side. Follow the methods and the parameters to understand
-	public void RightSide(){
-		SideAutonomous(false);
+	public void RightSide(boolean twoCube){
+		SideAutonomous(false, twoCube);
 	}
 	
 	public boolean PosiRela(boolean Leftside){ 
@@ -214,26 +228,60 @@ public class Autonomous
 	return startPos;
 	}
 	
-	public void SideAutonomous(boolean LeftSide){
+	public void SideAutonomous(boolean LeftSide, boolean twoCube){
 		
 		//E1 3180; E2 2050 this is on the way to the switch
 		//E1 380 ;E2 230 when scoring
 	if (PosiRela(LeftSide)){
-		
+		Block.WristOut();
+		Block.intake();
+		Block.stopCubeIntake();
+		winch.winchSetPosition(switchEncoder);
 		autoDrive(-.50, 3180, true); 
-	//	winch.liftUp();
 		//autoDrive(-.5, 2050, true);
 				if(LeftSide){
 					autoRotate(-rotate, angled);
 				}
 				else if(!LeftSide){
 					autoRotate(rotate, angled);
+				}
 		autoDrive(-.30, 320, true);
-		//Block.scoreSwitch();
-		//winch.stopLift();
+		Block.deposit();
+		Block.stopCubeIntake();
+		winch.DisablePID();
 		//autoDrive(-.3, 205, true);
-		 
-	}
+		if(twoCube == true) {
+			autoDrive(.30, 320, true);
+			if(LeftSide){
+				autoRotate(rotate, angled);
+			}
+			else if(!LeftSide){
+				autoRotate(-rotate, angled);
+			}
+			autoDrive(-.40, 1600, true);
+			if(LeftSide){
+				autoRotate(-rotate, angled);
+			}
+			else if(!LeftSide){
+				autoRotate(rotate, angled);
+			}
+			autoDrive(.30, 290, true);
+			if(LeftSide){
+				autoRotate(-rotate, angled);
+			}
+			else if(!LeftSide){
+				autoRotate(rotate, angled);
+			}
+			Block.intake();
+			Block.stopCubeIntake();
+			
+			winch.winchSetPosition(switchEncoder);
+			autoDrive(-.30, 320, true);
+			Block.deposit();
+			Block.stopCubeIntake();
+			winch.DisablePID();
+		}
+	
 	}
 	
 	else if(!PosiRela(LeftSide)){
@@ -266,8 +314,11 @@ public class Autonomous
 		else if(isScoring == true && fast == false) {
 			
 			//E1 924; E2 593 
+			Block.WristOut();
+			Block.intake();
+			Block.stopCubeIntake();
 			autoDrive(-.5, 1200, true); 
-			//winch.liftUp();
+			winch.winchSetPosition(switchEncoder);
 			//autoDrive(-.5, 774, true);
 			if(firstLetter == 'L') {
 				autoRotate(rotate, angled);
@@ -286,26 +337,32 @@ public class Autonomous
 				}
 			//E1 1118 ;E2 720
 			autoDrive(-.5, 1118, true);
-		//	Block.scoreSwitch();
-			//winch.stopLift();
+			Block.deposit();
+			Block.stopCubeIntake();
+			winch.DisablePID();
 			//autoDrive(-.5, 721, true);
 			
 		}
 		else if(isScoring == true && fast == true) {
+			Block.WristOut();
+			Block.intake();
+			Block.stopCubeIntake();
 			autoDrive(-.40, 100, true);
-			//winch.liftUp();
+			winch.winchSetPosition(switchEncoder);
 			
 			if(firstLetter == 'L') {
 				autoRotate(.50, 24);
 				autoDrive(-.60, 2100, true);
-		//		Block.scoreSwitch();
-			//	winch.stopLift();
+				Block.deposit();
+				Block.stopCubeIntake();
+				winch.DisablePID();
 			}
 			else if (firstLetter == 'R') {
 				autoRotate(-.50, 16);
 				autoDrive(-.60, 1900, true);
-			//	Block.scoreSwitch();
-			//	winch.stopLift();
+				Block.deposit();
+				Block.stopCubeIntake();
+				winch.DisablePID();
 			}
 			
 		}

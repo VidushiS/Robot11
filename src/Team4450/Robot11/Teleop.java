@@ -32,6 +32,8 @@ class Teleop
 		Block = new CubeIntake(robot);
 		speedShifter = new RobotSpeedShifter(robot);
 		
+		if(robot.isOperatorControl())speedShifter.slowSpeed();
+		
 		vision = Vision.getInstance(robot);
 	}
 
@@ -76,9 +78,11 @@ class Teleop
 		//launchPad.AddControl(LaunchPadControlIDs.BUTTON_COLOR_HERE);
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED_RIGHT);
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE_RIGHT);
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
 		launchPad.AddControl(LaunchPadControlIDs.ROCKER_RIGHT);
 		launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_GREEN);
 		launchPad.addLaunchPadEventListener(new LaunchPadListener());
 		launchPad.Start();
 
@@ -93,6 +97,9 @@ class Teleop
 		//Example on how to track button:
 		//rightStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
 		rightStick.AddButton(JoyStickButtonIDs.TRIGGER);
+		rightStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
+		rightStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+		rightStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
 		rightStick.addJoyStickEventListener(new RightStickListener());
 		rightStick.Start();
 
@@ -143,8 +150,7 @@ class Teleop
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f  utilX=%.4f", leftY, rightY, utilX);
 			LCD.printLine(6, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), Devices.navx.getTotalYaw(), 
 					Devices.navx.getYawRate(), Devices.navx.getHeading());
-			LCD.printLine(8, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltate(), robot.monitorCompressorThread.getPressure());
-			//I CHANGED GETVOLTAGE TO GETVOLTATE.
+			LCD.printLine(8, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltage(), robot.monitorCompressorThread.getPressure());
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
 
@@ -194,8 +200,9 @@ class Teleop
 				else
 					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 			}
+					Winch.WinchMotorTeleOp(utilY);
 			
-				Winch.WinchMotorTeleOp(utilY);
+				
 				
 			
 			// Update the robot heading indicator on the DS.
@@ -272,22 +279,22 @@ class Teleop
 				break;
 				
 			case BUTTON_RED_RIGHT:
-				if (!Block.isOut())
+				if (launchPadEvent.control.latchedState)
 					Block.WristIn();
 				else
 					Block.WristOut();
 				break;
-			case BUTTON_RED:
+				
+			case BUTTON_YELLOW:
+				if(!Winch.isFixedPosition()) {
+					Winch.winchSetPosition(14000);
+				}
+				else {
+					Winch.DisablePID();
+				}
 				break;
 				
-			/*case BUTTON_BLUE_RIGHT:
-				if (Block.ISAUTOINTAKERUNNING)
-					Block.AutoIntakeStop();
-				else
-					Block.AutoIntakeStart();
-				break;*/
-					
-			case BUTTON_YELLOW:
+			case BUTTON_GREEN:
 				
 					//Devices.winchMotor.set(0.8);//TODO change this value or do the Switch Winch....
 					Devices.SRXEncoder.reset();
@@ -407,6 +414,7 @@ class Teleop
     				speedShifter.fastSpeed();
 
 				break;
+			
 			default:
 				break;
 			}
@@ -453,6 +461,7 @@ class Teleop
 				else{
 					Block.stopCubeIntake();
 				}
+				break;
 			case TOP_BACK:
 				if(button.latchedState) {
 					Block.MotorStartDeposit();
@@ -460,6 +469,23 @@ class Teleop
 				else {
 					Block.stopCubeIntake();
 				}
+				break;
+			case TOP_RIGHT:
+				if(!Block.ISAUTOINTAKERUNNING) {
+					Block.AutoIntakeStart();
+				}
+				else {
+					Block.AutoIntakeStop();
+				}
+				break; 
+			case TOP_LEFT:
+				if (!Winch.isFixedPosition()) {
+					Winch.winchSetPosition(10100);
+				}
+				else {
+					Winch.DisablePID();
+				}
+				break;
 			default:
 				break;
 			}
