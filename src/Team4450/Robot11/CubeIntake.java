@@ -1,12 +1,9 @@
 package Team4450.Robot11;
 
-
-
 import Team4450.Lib.*;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class CubeIntake {
 
 	private Robot robot;
@@ -18,13 +15,14 @@ public class CubeIntake {
 		this.robot = robot;
 		
 		if (robot.isAutonomous()) {
-			WristIn();
-			WristOpen();
+			SmartDashboard.putBoolean("Intaking Cube", isIntakeIntaking());
+			SmartDashboard.putBoolean("Depositing cube", isIntakeDeposit());
 		}
 		if(robot.isOperatorControl()) {
 			SmartDashboard.putBoolean("Intake", isIntaking());
 			SmartDashboard.putBoolean("Gear Wrist Out", isOut());
 			SmartDashboard.putBoolean("Gear Wrist Open", isGrabberOpen());
+			SmartDashboard.putBoolean("Auto Intake", ISAUTOINTAKERUNNING);
 			
 		}
 		
@@ -37,10 +35,10 @@ public class CubeIntake {
 	}
 	public void deposit() {
 		WristOpen();
-		Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
-		Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
+		Devices.LeftCubeIntakeMotor.set(.6);//TODO check to see if they are going opp.
+		Devices.RightCubeIntakeMotor.set(-.6); //TODO test values
 		
-		
+		Timer.delay(2);
 		WristClose();
 		
 		
@@ -48,12 +46,14 @@ public class CubeIntake {
 		isIntakeIntaking = false;
 	}
 	public void intake() {
-		WristClose();
 		
+		//WristOpen();
 		Devices.LeftCubeIntakeMotor.set(-.5); //TODO test
 		Devices.RightCubeIntakeMotor.set(.5);// TODO test
 		
-		WristOpen();
+		Timer.delay(2);
+		WristClose();
+		stopCubeIntake();
 		Util.consoleLog("The cube is being taken in to the robot");
 		
 		isIntakeDeposit = false;

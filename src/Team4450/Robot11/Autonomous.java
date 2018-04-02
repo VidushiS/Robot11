@@ -35,6 +35,9 @@ public class Autonomous
 		
 		robotSpeedShifter.slowSpeed();
 		
+		Block.WristClose();
+		Block.WristOut();
+		
 	}
 
 	public void dispose()
@@ -129,6 +132,7 @@ public class Autonomous
 		if (robot.isComp) Devices.SetCANTalonBrakeMode(enableBrakes);
 
 		Devices.SRXEncoder.reset();
+		Timer.delay(0.3);
 		//Devices.SRXEncoder2.reset();
 		Devices.navx.resetYaw();
 		
@@ -187,8 +191,8 @@ public class Autonomous
 	
 	
 	double rotate = 0.45;//Used only for 90 degree turns. Power when turning.
-	int angled = 90;//Used only for 90 degree turns. Angle to turn to.
-	int switchEncoder = 4000;
+	int angled = 75;//Used only for 90 degree turns. Angle to turn to.
+	int switchEncoder = 7900;
 	
 	public static int SwitchEncoderUp = 1700; //Used only for when the lift goes up when scoring on the switch
 	//Used only for when the lift goes down when scoring on the switch
@@ -233,50 +237,59 @@ public class Autonomous
 		//E1 3180; E2 2050 this is on the way to the switch
 		//E1 380 ;E2 230 when scoring
 	if (PosiRela(LeftSide)){
-		Block.WristOut();
-		Block.intake();
-		Block.stopCubeIntake();
+		
 		winch.winchSetPosition(switchEncoder);
-		autoDrive(-.50, 3180, true); 
+		//autoDrive(-.50, 3180, true); 
+		autoDrive(-.50, 2649, true); 
 		//autoDrive(-.5, 2050, true);
 				if(LeftSide){
+					Util.consoleLog();
 					autoRotate(-rotate, angled);
 				}
 				else if(!LeftSide){
+					Util.consoleLog();
 					autoRotate(rotate, angled);
 				}
-		autoDrive(-.30, 320, true);
+		//autoDrive(-.30, 320, true);
+		autoDrive(-.30, 446, true); 
 		Block.deposit();
 		Block.stopCubeIntake();
-		winch.DisablePID();
+		//winch.DisablePID();
 		//autoDrive(-.3, 205, true);
 		if(twoCube == true) {
-			autoDrive(.30, 320, true);
+			//autoDrive(.30, 320, true);
+			autoDrive(.30, 446, true); 
+			winch.winchSetPosition(100);
 			if(LeftSide){
 				autoRotate(rotate, angled);
 			}
 			else if(!LeftSide){
 				autoRotate(-rotate, angled);
 			}
-			autoDrive(-.40, 1600, true);
+			//autoDrive(-.40, 1600, true);
+			autoDrive(-.50, 1423, true); 
 			if(LeftSide){
 				autoRotate(-rotate, angled);
 			}
 			else if(!LeftSide){
 				autoRotate(rotate, angled);
 			}
-			autoDrive(.30, 290, true);
+			//autoDrive(-.30, 290, true);
+			autoDrive(-.50, 770, true); 
 			if(LeftSide){
 				autoRotate(-rotate, angled);
 			}
 			else if(!LeftSide){
 				autoRotate(rotate, angled);
 			}
+			Block.WristOpen();
+			//autoDrive(-.30, 290, true);
+			autoDrive(-.30, 316, true);
 			Block.intake();
-			Block.stopCubeIntake();
 			
 			winch.winchSetPosition(switchEncoder);
-			autoDrive(-.30, 320, true);
+			Timer.delay(2);
+			//autoDrive(-.30, 10, true);
 			Block.deposit();
 			Block.stopCubeIntake();
 			winch.DisablePID();
@@ -288,6 +301,7 @@ public class Autonomous
 		
 		//E1 4600; E2 2804 on the way the platform zone
 		//E1 1470; E2 960 going in the platform 
+				winch.winchSetPosition(switchEncoder);
 				autoDrive(-.5, 4600, true);
 				//autoDrive(-.5, 2970, true);
 				if (LeftSide) {
@@ -296,8 +310,27 @@ public class Autonomous
 				else if(!LeftSide) {
 					autoRotate(rotate, angled); 
 				}
-				autoDrive(-.5, 1470, true); 
+				//autoDrive(-.5, 1470, true);
+				autoDrive(-.5, 3100, true);
 				//autoDrive(-.5, 950, true);
+				if (LeftSide) {
+					autoRotate(-rotate, angled); 
+				}
+				else if(!LeftSide) {
+					autoRotate(rotate, angled); 
+				}
+				autoDrive(-.5, 1520, true);
+				if (LeftSide) {
+					autoRotate(-rotate, angled); 
+				}
+				else if(!LeftSide) {
+					autoRotate(rotate, angled); 
+				}
+				autoDrive(-.5, 300, true);
+				Block.deposit();
+				Block.stopCubeIntake();
+				winch.DisablePID();
+				
 	}
 
 	}
@@ -314,9 +347,7 @@ public class Autonomous
 		else if(isScoring == true && fast == false) {
 			
 			//E1 924; E2 593 
-			Block.WristOut();
-			Block.intake();
-			Block.stopCubeIntake();
+			
 			autoDrive(-.5, 1200, true); 
 			winch.winchSetPosition(switchEncoder);
 			//autoDrive(-.5, 774, true);
@@ -344,9 +375,6 @@ public class Autonomous
 			
 		}
 		else if(isScoring == true && fast == true) {
-			Block.WristOut();
-			Block.intake();
-			Block.stopCubeIntake();
 			autoDrive(-.40, 100, true);
 			winch.winchSetPosition(switchEncoder);
 			

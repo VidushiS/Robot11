@@ -2,6 +2,7 @@ package Team4450.Robot11;
 
 import Team4450.Lib.*;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Robot11.Devices;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.PIDController;
@@ -16,6 +17,7 @@ public class WinchToogle {
 		Util.consoleLog();	
 		this.robot = robot;
 		
+		LCD.printLine(3, "Winch Encoder Counts", Devices.WinchEncoder.get());
 		Devices.footServo.set(1);
 		Devices.forkliftServo.set(0.2);
 		
@@ -23,6 +25,13 @@ public class WinchToogle {
 		
 		Devices.WinchEncoder.reset();
 		FixedPosition = false;
+		
+		if(robot.isDisabled()) {
+			if(winchPID.isEnabled()) {
+				winchPID.disable();
+			}
+			
+		}
 	}
 	public void dispose(){
 		Util.consoleLog();
@@ -58,7 +67,7 @@ public class WinchToogle {
 	
 			if (robot.isClone) {
 				if((Devices.WinchEncoder.get() < 14800 && power > 0) || (power < 0 && Devices.winchLimitSwitch.get())){ 
-					Devices.winchMotor.set(-power);
+					Devices.winchMotor.set(power);
 				}
 				else {
 					if (!Devices.winchLimitSwitch.get()) { 
@@ -80,8 +89,7 @@ public class WinchToogle {
 					Devices.winchMotor.set(0);
 				}
 			}
-			
-			FixedPosition = false;
+		
 	}
 	public void winchSetPosition(int encoderCounts){
 		winchPID.setPID(0.0003, 0.00001, 0.0003, 0.0);
@@ -89,7 +97,7 @@ public class WinchToogle {
 		//Remember in the constructor, the output is the motor, so we are restricting the motor values to -1 and 1
 		winchPID.setOutputRange(-1, 1);
 		//the PID value is trying to get to the encoder count inputted in to this method
-		winchPID.setSetpoint(-encoderCounts);
+		winchPID.setSetpoint(encoderCounts);
 		//If we are within 1 percent of the encoder target then this program should stop, otherwise the robot will try to get the perfect encoder count
 		winchPID.setPercentTolerance(1);
 		//Start up the PID

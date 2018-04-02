@@ -32,6 +32,8 @@ class Teleop
 		Block = new CubeIntake(robot);
 		speedShifter = new RobotSpeedShifter(robot);
 		
+		LCD.printLine(4, "Wheel Encoder Counts", Devices.SRXEncoder.get());
+		LCD.printLine(5, "Wheel Encoder Counts", Devices.SRXEncoder2.get());
 		if(robot.isOperatorControl())speedShifter.slowSpeed();
 		
 		vision = Vision.getInstance(robot);

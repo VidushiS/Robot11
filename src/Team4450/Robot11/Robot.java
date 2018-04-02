@@ -32,6 +32,7 @@ public class Robot extends SampleRobot
   
   public boolean		isClone = false, isComp = false;
     	
+  private WinchToogle winch;
   DriverStation.Alliance	alliance;
   int                       location, matchNumber;
   String					eventName, gameMessage;
@@ -98,11 +99,11 @@ public class Robot extends SampleRobot
    		
    		if (isComp) {
    			Devices.WinchEncoder.setReverseDirection(false);
-   			Devices.winchMotor.setInverted(true);
+   			Devices.winchMotor.setInverted(false);
    		}
    		else {
    			Devices.WinchEncoder.setReverseDirection(true);
-   			Devices.winchMotor.setInverted(false);
+   			Devices.winchMotor.setInverted(true);
    		}
    		
    		Devices.SRXEncoder.setReverseDirection(false);
@@ -163,6 +164,7 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("AutoTarget", false);
 		  SmartDashboard.putBoolean("TargetLocked", false);
 		  SmartDashboard.putBoolean("Overload", false);
+		  
 		  
 		  Util.consoleLog("end");
 	  }
