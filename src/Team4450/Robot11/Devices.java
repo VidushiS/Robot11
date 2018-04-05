@@ -35,7 +35,7 @@ public class Devices
 	  public static WPI_TalonSRX RightCubeIntakeMotor = new WPI_TalonSRX(6); //TODO check assignments
 	  public static DifferentialDrive	robotDrive;
 
-	  public static Servo				forkliftServo = new Servo(2);
+	  public static Servo				BarServo = new Servo(2);
 	  public static Servo				footServo = new Servo(3);
 	  public final static Joystick      utilityStick = new Joystick(2);	
 	  public final static Joystick      leftStick = new Joystick(0);	
@@ -50,6 +50,7 @@ public class Devices
 	 
 	  public final static ValveDA gearWrist = new ValveDA(4);
 	 
+	  public final static ValveDA winchStop = new ValveDA(6);
 	 // public final static Servo		liftServoRight = new Servo(1);//TODO Make sure to check the port assignments
 	  //public final static Servo		liftServoLeft = new Servo(0);//TODO Make sure to check the port assignments
 	  

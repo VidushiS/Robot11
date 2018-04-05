@@ -66,7 +66,7 @@ class Teleop
 
 		LCD.printLine(1, "Mode: OperatorControl");
 		LCD.printLine(2, "All=%s, Start=%d, FMS=%b", robot.alliance.name(), robot.location, Devices.ds.isFMSAttached());
-
+		
 		// Configure LaunchPad and Joystick event handlers.
 
 		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_BLUE, this);
@@ -139,7 +139,14 @@ class Teleop
 		{
 			// Get joystick deflection and feed to robot drive object
 			// using calls to our JoyStick class.
-
+			LCD.printLine(3, "Winch Encoder Counts = %d", Devices.WinchEncoder.get());
+			LCD.printLine(7, "Wheel encoder 1 =  %d", Devices.SRXEncoder.get());
+			SmartDashboard.putBoolean("GearBox", speedShifter.isSlow);
+			SmartDashboard.putBoolean("Intake", Block.isIntakeIntaking());
+			SmartDashboard.putBoolean("Gear Wrist Out", Block.isOut());
+			SmartDashboard.putBoolean("Gear Wrist Open", Block.isGrabberOpen());
+			SmartDashboard.putBoolean("Auto Intake", Block.ISAUTOINTAKERUNNING());
+			
 			rightY = stickLogCorrection(rightStick.GetY());	// fwd/back
 			leftY = stickLogCorrection(leftStick.GetY());	// fwd/back
 
@@ -277,7 +284,7 @@ class Teleop
 				break;
 			*/
 			case BUTTON_BLUE:
-				Winch.deployForks();
+				//Winch.deployForks();
 				break;
 				
 			case BUTTON_RED_RIGHT:
@@ -297,10 +304,16 @@ class Teleop
 				break;
 				
 			case BUTTON_GREEN:
-				
-					//Devices.winchMotor.set(0.8);//TODO change this value or do the Switch Winch....
 					Devices.SRXEncoder.reset();
 					Devices.SRXEncoder2.reset();
+				break;
+			case BUTTON_BLACK:
+				if(launchPadEvent.control.latchedState) {
+					Winch.winchStop();	
+				}
+				else {
+					Winch.winchActive();
+				}
 				break;
 			
 			default:
@@ -366,6 +379,13 @@ class Teleop
 			{
 			case TRIGGER:
 				altDriveMode = !altDriveMode;
+				break;
+				
+			case TOP_RIGHT:
+				Winch.HoldBar();
+				break;
+			case TOP_BACK:
+				Winch.DeployBar();
 				break;
 			
 			//Example of Joystick Button case:

@@ -18,15 +18,7 @@ public class CubeIntake {
 			SmartDashboard.putBoolean("Intaking Cube", isIntakeIntaking());
 			SmartDashboard.putBoolean("Depositing cube", isIntakeDeposit());
 		}
-		if(robot.isOperatorControl()) {
-			SmartDashboard.putBoolean("Intake", isIntaking());
-			SmartDashboard.putBoolean("Gear Wrist Out", isOut());
-			SmartDashboard.putBoolean("Gear Wrist Open", isGrabberOpen());
-			SmartDashboard.putBoolean("Auto Intake", ISAUTOINTAKERUNNING);
-			
-		}
-		
-		
+	
 	}
 	public void dispose() {
 		Util.consoleLog();
@@ -35,10 +27,9 @@ public class CubeIntake {
 	}
 	public void deposit() {
 		WristOpen();
-		Devices.LeftCubeIntakeMotor.set(.6);//TODO check to see if they are going opp.
-		Devices.RightCubeIntakeMotor.set(-.6); //TODO test values
-		
-		Timer.delay(2);
+		MotorStartDeposit();
+		Timer.delay(.7);
+		stopCubeIntake();
 		WristClose();
 		
 		
@@ -48,10 +39,8 @@ public class CubeIntake {
 	public void intake() {
 		
 		//WristOpen();
-		Devices.LeftCubeIntakeMotor.set(-.5); //TODO test
-		Devices.RightCubeIntakeMotor.set(.5);// TODO test
-		
-		Timer.delay(2);
+		MotorStartIntake();
+		Timer.delay(.5);
 		WristClose();
 		stopCubeIntake();
 		Util.consoleLog("The cube is being taken in to the robot");
@@ -140,7 +129,9 @@ public class CubeIntake {
 	public boolean isIntakeIntaking() {
 		return isIntakeIntaking;
 	}
-	
+	public boolean ISAUTOINTAKERUNNING() {
+		return ISAUTOINTAKERUNNING;
+	}
 	public void AutoIntakeStart() {
 		
 		if (AutoIntakeThread != null) return;
@@ -172,7 +163,7 @@ public class CubeIntake {
 			
 			try 
 			{
-				Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
+				Devices.LeftCubeIntakeMotor.set(-.5);//TODO check to see if they are going opp.
 				Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
 				
 			while(!isInterrupted() && Devices.LeftCubeIntakeMotor.getOutputCurrent() < currentLimit) {

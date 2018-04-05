@@ -69,7 +69,7 @@ public class Robot extends SampleRobot
    	try
     {
    		Util.consoleLog();
-
+   		winch = new WinchToogle(robot);
    		LCD.clearAll();
    		LCD.printLine(1, "Mode: RobotInit");
       
@@ -153,7 +153,8 @@ public class Robot extends SampleRobot
 	  try
 	  {
 		  Util.consoleLog();
-
+				winch.DisablePID();
+			
 		  LCD.printLine(1, "Mode: Disabled");
 		  // Reset driver station LEDs.
 
@@ -181,6 +182,7 @@ public class Robot extends SampleRobot
 
     	  LCD.clearAll();
     	  LCD.printLine(1, "Mode: Autonomous");
+    	 
             
     	  SmartDashboard.putBoolean("Disabled", false);
     	  SmartDashboard.putBoolean("Auto Mode", true);
@@ -225,8 +227,7 @@ public class Robot extends SampleRobot
 
     	  LCD.clearAll();
       	  LCD.printLine(1, "Mode: Teleop");
-            
-      	  SmartDashboard.putBoolean("Disabled", false);
+       	  SmartDashboard.putBoolean("Disabled", false);
       	  SmartDashboard.putBoolean("Teleop Mode", true);		  
       	  
       	  alliance = Devices.ds.getAlliance();

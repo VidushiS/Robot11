@@ -17,21 +17,17 @@ public class WinchToogle {
 		Util.consoleLog();	
 		this.robot = robot;
 		
-		LCD.printLine(3, "Winch Encoder Counts", Devices.WinchEncoder.get());
+		
 		Devices.footServo.set(1);
-		Devices.forkliftServo.set(0.2);
+		Devices.winchStop.SetA();
+	
 		
 		winchPID = new PIDController(0.0, 0.0, 0.0, Devices.WinchEncoder, Devices.winchMotor);
 		
 		Devices.WinchEncoder.reset();
 		FixedPosition = false;
 		
-		if(robot.isDisabled()) {
-			if(winchPID.isEnabled()) {
-				winchPID.disable();
-			}
-			
-		}
+		
 	}
 	public void dispose(){
 		Util.consoleLog();
@@ -91,6 +87,13 @@ public class WinchToogle {
 			}
 		
 	}
+	
+	public void winchStop() {
+		Devices.winchStop.SetB();
+	}
+	public void winchActive() {
+		Devices.winchStop.SetA();
+	}
 	public void winchSetPosition(int encoderCounts){
 		winchPID.setPID(0.0003, 0.00001, 0.0003, 0.0);
 		
@@ -114,12 +117,12 @@ public class WinchToogle {
 		return FixedPosition;
 	}
 	
-	public void retractForks() {
-		Devices.forkliftServo.setPosition(0.2);
+	public void DeployBar() {
+		Devices.BarServo.setPosition(0.2);
 	}
-	public void deployForks() {
+	public void HoldBar() {
 		
-		Devices.forkliftServo.setPosition(0.82);	
+		Devices.BarServo.setPosition(0.5);	
 
 	}
 /*	public void deployFoot() {

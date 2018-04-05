@@ -59,6 +59,7 @@ public class Autonomous
 
 		Devices.robotDrive.setSafetyEnabled(false);
 
+	
 		//TODO Encoder likely used, so just commenting out.
 		// Initialize encoder.
 		Devices.SRXEncoder.reset();
@@ -132,7 +133,10 @@ public class Autonomous
 		if (robot.isComp) Devices.SetCANTalonBrakeMode(enableBrakes);
 
 		Devices.SRXEncoder.reset();
-		Timer.delay(0.3);
+		if(robot.isClone) {
+			Timer.delay(0.3);
+		}
+		
 		//Devices.SRXEncoder2.reset();
 		Devices.navx.resetYaw();
 		
@@ -145,7 +149,7 @@ public class Autonomous
 			// + power means backward.
 			
 			//angle = (int) robot.gyro.getAngle();
-			angle = (int) Devices.navx.getYaw();
+			angle = (int) adjustAngle(Devices.navx.getYaw());
 
 			LCD.printLine(5, "angle=%d", angle);
 			
@@ -160,7 +164,13 @@ public class Autonomous
 			// right so we set the turn value to - because - is a turn left which corrects our right
 			// drift.
 			
-			Devices.robotDrive.curvatureDrive(power, angle * gain, false);
+			if(power > 0) {
+				Devices.robotDrive.curvatureDrive(power, angle * -gain, false);	
+			}
+			else {
+				Devices.robotDrive.curvatureDrive(power, angle * gain, false);	
+			}
+			
 			
 			Timer.delay(.020);
 		}
@@ -184,15 +194,15 @@ public class Autonomous
 		
 		Devices.robotDrive.tankDrive(power, -power);
 
-		while (isAutoActive() && Math.abs((int) Devices.navx.getYaw()) < angle) {Timer.delay(.020);} 
+		while (isAutoActive() && Math.abs((int) adjustAngle(Devices.navx.getYaw())) < angle) {Util.consoleLog("Angle: %.2f", adjustAngle(Devices.navx.getYaw()));Timer.delay(.020);} 
 		
 		Devices.robotDrive.tankDrive(0, 0);
 	}
 	
 	
-	double rotate = 0.45;//Used only for 90 degree turns. Power when turning.
-	int angled = 75;//Used only for 90 degree turns. Angle to turn to.
-	int switchEncoder = 7900;
+	double rotate = 0.7;//Used only for 90 degree turns. Power when turning.
+	//Used only for 90 degree turns. Angle to turn to.
+	
 	
 	public static int SwitchEncoderUp = 1700; //Used only for when the lift goes up when scoring on the switch
 	//Used only for when the lift goes down when scoring on the switch
@@ -233,14 +243,21 @@ public class Autonomous
 	}
 	
 	public void SideAutonomous(boolean LeftSide, boolean twoCube){
-		
+		int switchEncoder; 
+		if(robot.isClone) {
+			switchEncoder = 9700;	
+		}
+		else switchEncoder = 7900;
+		int angled = 79;
 		//E1 3180; E2 2050 this is on the way to the switch
 		//E1 380 ;E2 230 when scoring
 	if (PosiRela(LeftSide)){
 		
 		winch.winchSetPosition(switchEncoder);
+		
 		//autoDrive(-.50, 3180, true); 
-		autoDrive(-.50, 2649, true); 
+		autoDrive(-.70, 2649, true); 
+		Util.consoleLog();
 		//autoDrive(-.5, 2050, true);
 				if(LeftSide){
 					Util.consoleLog();
@@ -250,49 +267,49 @@ public class Autonomous
 					Util.consoleLog();
 					autoRotate(rotate, angled);
 				}
+				Util.consoleLog();
 		//autoDrive(-.30, 320, true);
-		autoDrive(-.30, 446, true); 
+		autoDrive(-.40, 396, true); 
+		Util.consoleLog();
 		Block.deposit();
 		Block.stopCubeIntake();
-		//winch.DisablePID();
 		//autoDrive(-.3, 205, true);
 		if(twoCube == true) {
+			//2074
+			//453
+			//26 degrees
 			//autoDrive(.30, 320, true);
-			autoDrive(.30, 446, true); 
-			winch.winchSetPosition(100);
+			Util.consoleLog();
+			autoDrive(.40, 306, true); //TODO Check if the robot can clear the switch
+			Timer.delay(0.1);
+			winch.winchSetPosition(1800); //TODO Check if it hits the bottom of the robot. 
 			if(LeftSide){
-				autoRotate(rotate, angled);
+				autoRotate(-rotate, 77);
 			}
 			else if(!LeftSide){
-				autoRotate(-rotate, angled);
+				autoRotate(rotate, 77);
 			}
+			Util.consoleLog();
 			//autoDrive(-.40, 1600, true);
-			autoDrive(-.50, 1423, true); 
+			autoDrive(.60, 2074, true);  //TODO check if the robot barely goes out enough to get the block. 
+			Util.consoleLog();
 			if(LeftSide){
-				autoRotate(-rotate, angled);
+				autoRotate(rotate, 26);
 			}
 			else if(!LeftSide){
-				autoRotate(rotate, angled);
+				autoRotate(-rotate, 26);
 			}
-			//autoDrive(-.30, 290, true);
-			autoDrive(-.50, 770, true); 
-			if(LeftSide){
-				autoRotate(-rotate, angled);
-			}
-			else if(!LeftSide){
-				autoRotate(rotate, angled);
-			}
+			Util.consoleLog();
+			//autoDrive(-.30, 371, true);
 			Block.WristOpen();
-			//autoDrive(-.30, 290, true);
-			autoDrive(-.30, 316, true);
-			Block.intake();
-			
+			autoDrive(-.50, 453, true); 
+			Util.consoleLog();
+			/*Block.intake();
 			winch.winchSetPosition(switchEncoder);
-			Timer.delay(2);
-			//autoDrive(-.30, 10, true);
 			Block.deposit();
-			Block.stopCubeIntake();
+			Block.stopCubeIntake();*/
 			winch.DisablePID();
+		
 		}
 	
 	}
@@ -302,7 +319,9 @@ public class Autonomous
 		//E1 4600; E2 2804 on the way the platform zone
 		//E1 1470; E2 960 going in the platform 
 				winch.winchSetPosition(switchEncoder);
-				autoDrive(-.5, 4600, true);
+				Timer.delay(0.2);
+				autoDrive(-.6, 4600, true);
+				Util.consoleLog();
 				//autoDrive(-.5, 2970, true);
 				if (LeftSide) {
 					autoRotate(-rotate, angled); 
@@ -310,8 +329,10 @@ public class Autonomous
 				else if(!LeftSide) {
 					autoRotate(rotate, angled); 
 				}
+				Util.consoleLog();
 				//autoDrive(-.5, 1470, true);
-				autoDrive(-.5, 3100, true);
+				autoDrive(-.6, 2700, true);
+				Util.consoleLog();
 				//autoDrive(-.5, 950, true);
 				if (LeftSide) {
 					autoRotate(-rotate, angled); 
@@ -319,16 +340,18 @@ public class Autonomous
 				else if(!LeftSide) {
 					autoRotate(rotate, angled); 
 				}
-				autoDrive(-.5, 1520, true);
-				if (LeftSide) {
+				Util.consoleLog();
+				//autoDrive(-.5, 1520, true);
+				/*if (LeftSide) {
 					autoRotate(-rotate, angled); 
 				}
 				else if(!LeftSide) {
 					autoRotate(rotate, angled); 
-				}
-				autoDrive(-.5, 300, true);
+				}*/
+				autoDrive(-.5, 150, true);
+				Util.consoleLog();
 				Block.deposit();
-				Block.stopCubeIntake();
+				//Block.stopCubeIntake();
 				winch.DisablePID();
 				
 	}
@@ -336,6 +359,8 @@ public class Autonomous
 	}
 	
 	public void CenterAuto(boolean isScoring, boolean fast) { //The boolean is scoring checks if we are going to score a block or not
+		int switchEncoder = 10100;
+		int angled = 90;
 		//E1 1970; E2 1250
 		//50 percent power maybe more cause more stuff will be added to the bot
 		char firstLetter = robot.gameMessage.charAt(0);
@@ -394,6 +419,12 @@ public class Autonomous
 			}
 			
 		}
+		
+		
+	}
+	public float adjustAngle(float angle) {
+		if (robot.isClone) return angle * (18.0f/15.0f);
+		else return angle;
 	}
 	
 	
