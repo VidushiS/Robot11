@@ -85,6 +85,7 @@ class Teleop
 		launchPad.AddControl(LaunchPadControlIDs.ROCKER_RIGHT);
 		launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_GREEN);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLACK);
 		launchPad.addLaunchPadEventListener(new LaunchPadListener());
 		launchPad.Start();
 
@@ -92,6 +93,7 @@ class Teleop
 		//Example on how to track button:
 		//leftStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
 		leftStick.AddButton(JoyStickButtonIDs.TRIGGER);
+		leftStick.AddButton(JoyStickButtonIDs.TOP_BACK);
 		leftStick.addJoyStickEventListener(new LeftStickListener());
 		leftStick.Start();
 
@@ -102,6 +104,7 @@ class Teleop
 		rightStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
 		rightStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
 		rightStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
+		rightStick.AddButton(JoyStickButtonIDs.TOP_BACK);
 		rightStick.addJoyStickEventListener(new RightStickListener());
 		rightStick.Start();
 
@@ -110,11 +113,14 @@ class Teleop
 		//utilityStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
 		utilityStick.AddButton(JoyStickButtonIDs.TOP_BACK);
 		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
+		utilityStick.AddButton(JoyStickButtonIDs.TRIGGER);
 		utilityStick.addJoyStickEventListener(new UtilityStickListener());
 		utilityStick.Start();
 
 		// Tighten up dead zone for smoother climber movement.
-		utilityStick.deadZone = .05;
+		utilityStick.deadZone = .15;
 
 		// Set CAN Talon brake mode by rocker switch setting.
 		// We do this here so that the Utility stick thread has time to read the initial state
@@ -207,6 +213,7 @@ class Teleop
 					SmartDashboard.putBoolean("Overload", steeringAssistMode);
 				}
 				else
+					//Devices.SetCANTalonRampRate(.5);
 					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 			}
 					Winch.WinchMotorTeleOp(utilY);
@@ -295,11 +302,11 @@ class Teleop
 				break;
 				
 			case BUTTON_YELLOW:
-				if(!Winch.isFixedPosition()) {
-					Winch.winchSetPosition(14000);
+				if(launchPadEvent.control.latchedState) {
+					Winch.winchStop();
 				}
 				else {
-					Winch.DisablePID();
+					Winch.winchActive();
 				}
 				break;
 				
@@ -308,12 +315,28 @@ class Teleop
 					Devices.SRXEncoder2.reset();
 				break;
 			case BUTTON_BLACK:
-				if(launchPadEvent.control.latchedState) {
-					Winch.winchStop();	
+				/*if(Devices.ds.isFMSAttached()) {
+					if(launchPadEvent.control.latchedState){
+						{
+							if (Devices.ds.getMatchTime() < 60) {
+								Winch.winchStop();
+							}
+							else Util.consoleLog();
+						}
+					}
+					else 
+					{
+						Winch.winchActive();
+					}
+					 
+				
 				}
 				else {
-					Winch.winchActive();
-				}
+					if(launchPadEvent.control.latchedState) {
+						Winch.winchStop();
+					}
+					else Winch.winchActive();
+				}*/  
 				break;
 			
 			default:
@@ -501,11 +524,11 @@ class Teleop
 				}
 				break; 
 			case TOP_LEFT:
-				if (!Winch.isFixedPosition()) {
-					Winch.winchSetPosition(10100);
+				if (Winch.isFixedPosition()) {
+					Winch.DisablePID();
 				}
 				else {
-					Winch.DisablePID();
+					Winch.winchSetPosition(8100);
 				}
 				break;
 			default:

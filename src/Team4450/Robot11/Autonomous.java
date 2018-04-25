@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Encoder;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jdk.nashorn.internal.ir.Block;
 
@@ -56,7 +57,7 @@ public class Autonomous
 				Devices.ds.isFMSAttached(), robot.gameMessage);
 		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%d, msg=%s", robot.alliance.name(), robot.location, 
 				Devices.ds.isFMSAttached(), program, robot.gameMessage);
-
+		LCD.printLine(3, "Winch Encoder Counts = %d", Devices.WinchEncoder.get());
 		Devices.robotDrive.setSafetyEnabled(false);
 
 	
@@ -105,7 +106,7 @@ public class Autonomous
 				break;
 			
 			case 7:
-				RightSide(true); //Two cube auto for the right side
+				SCurveAuto();// Center Auto with the S curve
 				break;
 				
 			case 8:
@@ -198,9 +199,42 @@ public class Autonomous
 		
 		Devices.robotDrive.tankDrive(0, 0);
 	}
+	private void autoSCurve(double power, double curve, int targetAngle, int straightEncoderCounts)
+	{
+		double	gain = .05;
+		
+		Util.consoleLog("pwr=%.2f  curve=%.2f  angle=%d  counts=%d", power, curve, targetAngle, straightEncoderCounts);
+		
+		// We start out driving in a curve until we have turned the desired angle.
+		// Then we drive straight the desired distance then curve back to starting
+		// angle. Curve is - for right, + for left.
+		
+		Devices.robotDrive.curvatureDrive(power, curve * gain, false);
+		
+		while (isAutoActive() && Math.abs((int) adjustAngle(Devices.navx.getYaw())) < targetAngle) 
+		{
+			LCD.printLine(6, "angle=%.2f adjusted angle=%.2f", Devices.navx.getYaw(), adjustAngle(Devices.navx.getYaw()));
+			Timer.delay(.020);
+		}
+		
+		autoDrive(power, straightEncoderCounts, false);
+
+		Devices.navx.resetYaw();
+		
+		Devices.robotDrive.curvatureDrive(power*.7, -curve * gain, false);
+		
+		while (isAutoActive() && Math.abs((int) adjustAngle(Devices.navx.getYaw())) < (targetAngle-10) && ((Devices.ds.getMatchType() != MatchType.None) ? Devices.ds.getMatchTime() > 5 : true)) 
+		{
+			LCD.printLine(6, "angle=%.2f adjusted angle=%.2f", Devices.navx.getYaw(), adjustAngle(Devices.navx.getYaw()));
+			Timer.delay(.020);
+		}
+		
+		Devices.SetCANTalonBrakeMode(true);
+
+		Devices.robotDrive.tankDrive(0, 0, true);
+	}
 	
-	
-	double rotate = 0.7;//Used only for 90 degree turns. Power when turning.
+	double rotate = 0.5;//Used only for 90 degree turns. Power when turning.
 	//Used only for 90 degree turns. Angle to turn to.
 	
 	
@@ -248,7 +282,7 @@ public class Autonomous
 			switchEncoder = 9700;	
 		}
 		else switchEncoder = 7900;
-		int angled = 79;
+		int angled = 89;
 		//E1 3180; E2 2050 this is on the way to the switch
 		//E1 380 ;E2 230 when scoring
 	if (PosiRela(LeftSide)){
@@ -256,7 +290,7 @@ public class Autonomous
 		winch.winchSetPosition(switchEncoder);
 		
 		//autoDrive(-.50, 3180, true); 
-		autoDrive(-.70, 2649, true); 
+		autoDrive(-.50, 3000, true); 
 		Util.consoleLog();
 		//autoDrive(-.5, 2050, true);
 				if(LeftSide){
@@ -269,7 +303,7 @@ public class Autonomous
 				}
 				Util.consoleLog();
 		//autoDrive(-.30, 320, true);
-		autoDrive(-.40, 396, true); 
+		autoDrive(-.25, 320, true); 
 		Util.consoleLog();
 		Block.deposit();
 		Block.stopCubeIntake();
@@ -359,22 +393,27 @@ public class Autonomous
 	}
 	
 	public void CenterAuto(boolean isScoring, boolean fast) { //The boolean is scoring checks if we are going to score a block or not
-		int switchEncoder = 10100;
-		int angled = 90;
+		int switchEncoder; 
+		if(robot.isClone) {
+			switchEncoder = 9700;	
+		}
+		else switchEncoder = 7900;
+		int angled = 85;
 		//E1 1970; E2 1250
 		//50 percent power maybe more cause more stuff will be added to the bot
 		char firstLetter = robot.gameMessage.charAt(0);
 		if (isScoring == false) {
-			autoDrive(-.3, 1970, true);//Make sure to test. Drive forward some
+			Timer.delay(.2);
+			Block.WristOut();
+			autoDrive(-.3, 1900, true);//Make sure to test. Drive forward some
 			//autoDrive(-.3, 1270, true);
 		}
 		
 		else if(isScoring == true && fast == false) {
 			
 			//E1 924; E2 593 
-			
-			autoDrive(-.5, 1200, true); 
 			winch.winchSetPosition(switchEncoder);
+			autoDrive(-.5, 924, true); 
 			//autoDrive(-.5, 774, true);
 			if(firstLetter == 'L') {
 				autoRotate(rotate, angled);
@@ -383,7 +422,7 @@ public class Autonomous
 				autoRotate(-rotate, angled); 
 			}
 			//E1 1028/ 1329; E2 670/ 857
-			autoDrive(-.5, 1330, true); 
+			autoDrive(-.5, 928, true); 
 			//autoDrive(-.5, 858, true);
 			if(firstLetter == 'L') {
 				autoRotate(-rotate, angled);
@@ -392,7 +431,7 @@ public class Autonomous
 				autoRotate(rotate, angled);			
 				}
 			//E1 1118 ;E2 720
-			autoDrive(-.5, 1118, true);
+			autoDrive(-.5, 880, true);
 			Block.deposit();
 			Block.stopCubeIntake();
 			winch.DisablePID();
@@ -407,14 +446,12 @@ public class Autonomous
 				autoRotate(.50, 24);
 				autoDrive(-.60, 2100, true);
 				Block.deposit();
-				Block.stopCubeIntake();
 				winch.DisablePID();
 			}
 			else if (firstLetter == 'R') {
-				autoRotate(-.50, 16);
+				autoRotate(-.50, 11);
 				autoDrive(-.60, 1900, true);
 				Block.deposit();
-				Block.stopCubeIntake();
 				winch.DisablePID();
 			}
 			
@@ -422,9 +459,44 @@ public class Autonomous
 		
 		
 	}
+	public void SCurveAuto() {
+		int switchEncoder; 
+		if(robot.isClone) {
+			switchEncoder = 9700;	
+		}
+		else switchEncoder = 7900;
+		char firstLetter = robot.gameMessage.charAt(0);
+		winch.winchSetPosition(switchEncoder);
+		if(firstLetter == 'R') {
+			autoSCurve(-.50, -6, 30, 950);
+		}
+		else {
+			autoSCurve(-.50, 6, 35, 1050);
+		}
+		Block.MotorStartDeposit();
+		autoDrive(.50, 1400, true);
+		winch.winchSetPosition(1800);
+		if(firstLetter == 'R') {
+			autoRotate(.60, 90); 
+			autoDrive(-.60, 850, true); 
+			autoRotate(-.60, 90); 
+		}
+		else {
+			autoRotate(-.50, 90); 
+			autoDrive(-.50, 850, true);
+			autoRotate(.50, 90); 
+		}
+		Block.AutoIntakeStart();
+		autoDrive(-.60, 350, true);
+		Block.WristClose();
+		autoDrive(.60, 300, true);
+		
+	}
 	public float adjustAngle(float angle) {
 		if (robot.isClone) return angle * (18.0f/15.0f);
-		else return angle;
+		else {
+			return angle;
+		}
 	}
 	
 	

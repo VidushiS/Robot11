@@ -25,6 +25,7 @@ public class WinchToogle {
 		winchPID = new PIDController(0.0, 0.0, 0.0, Devices.WinchEncoder, Devices.winchMotor);
 		
 		Devices.WinchEncoder.reset();
+		winchActive();
 		FixedPosition = false;
 		
 		
@@ -60,22 +61,22 @@ public class WinchToogle {
 		
 	}
 	public void WinchMotorTeleOp(double power) {
-	
+		if(!isFixedPosition()) {
 			if (robot.isClone) {
-				if((Devices.WinchEncoder.get() < 14800 && power > 0) || (power < 0 && Devices.winchLimitSwitch.get())){ 
-					Devices.winchMotor.set(power);
+				if((Devices.WinchEncoder.get() < 11000 && power > 0) || (power < 0 && Devices.winchLimitSwitch.get())){ 
+						Devices.winchMotor.set(power);	
 				}
 				else {
-					if (!Devices.winchLimitSwitch.get()) { 
-						Devices.WinchEncoder.reset();
-					}
-					Devices.winchMotor.set(0);		
+						if (!Devices.winchLimitSwitch.get()) { 
+							Devices.WinchEncoder.reset();
+						}
+						Devices.winchMotor.set(0);			
 				}
 					
 				
 			}
 			else {
-				if((!Devices.winchLimitSwitch.get() && power < 0) || (power > 0 && Devices.WinchEncoder.get() < 14800)){ //TODO double check this encoder values 
+				if((!Devices.winchLimitSwitch.get() && power < 0) || (power > 0 && Devices.WinchEncoder.get() < 11000)){ //TODO double check this encoder values 
 					Devices.winchMotor.set(power);
 				}
 				else { 
@@ -84,7 +85,12 @@ public class WinchToogle {
 					}
 					Devices.winchMotor.set(0);
 				}
+		}
+			
 			}
+		else {
+			
+		}
 		
 	}
 	
@@ -95,6 +101,8 @@ public class WinchToogle {
 		Devices.winchStop.SetA();
 	}
 	public void winchSetPosition(int encoderCounts){
+		
+		FixedPosition = true;
 		winchPID.setPID(0.0003, 0.00001, 0.0003, 0.0);
 		
 		//Remember in the constructor, the output is the motor, so we are restricting the motor values to -1 and 1
@@ -106,7 +114,7 @@ public class WinchToogle {
 		//Start up the PID
 		winchPID.enable();
 		Util.consoleLog();
-		FixedPosition = true;
+		
 	}
 	public void DisablePID() {
 		winchPID.disable();

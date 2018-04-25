@@ -76,14 +76,14 @@ public class CubeIntake {
 		
 		isOut = true;
 	}
-	public void MotorStartIntake() {
+	public void MotorStartDeposit() {
 		Devices.LeftCubeIntakeMotor.set(-.5);
 		Devices.RightCubeIntakeMotor.set(-.5);
 		
 		isIntaking = true;
 		isDepositing = false;
 	}
-	public void MotorStartDeposit() {
+	public void MotorStartIntake() {
 		Devices.LeftCubeIntakeMotor.set(.5);
 		Devices.RightCubeIntakeMotor.set(.5);
 		
@@ -163,14 +163,14 @@ public class CubeIntake {
 			
 			try 
 			{
-				Devices.LeftCubeIntakeMotor.set(-.5);//TODO check to see if they are going opp.
-				Devices.RightCubeIntakeMotor.set(-.5); //TODO test values
+				Devices.LeftCubeIntakeMotor.set(.5);//TODO check to see if they are going opp.
+				Devices.RightCubeIntakeMotor.set(.5); //TODO test values
 				
 			while(!isInterrupted() && Devices.LeftCubeIntakeMotor.getOutputCurrent() < currentLimit) {
 				LCD.printLine(9, "cube motor current=%f", Devices.LeftCubeIntakeMotor.getOutputCurrent());
 	            sleep(50);
 			}
-			if(!interrupted()) {
+			if(!interrupted() && robot.isEnabled()) {
 				Util.consoleLog(" Cube detected");
 				sleep(500);
 			}
